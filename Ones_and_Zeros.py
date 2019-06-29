@@ -14,12 +14,18 @@ print(sum(mass, 2))
 
 # I want to understand the following four solution
 #
-# !!! This is not understood enough !!!
+# --- This is not understood enough ---
+# +++
+# but 'reduce' is not for Ver 3.x
+# +++
 # def binary_array_to_number(arr):
 #     append_bit = lambda n, b: n << 1 | b
 #     return reduce(append_bit, arr)
 #
-# !!! This is not understood enough !!!
+# --- This is not understood enough ---
+# +++
+# this algorithm is more efficient then mine
+# +++
 # def binary_array_to_number(arr):
 #     return sum(digit * 2**i for i, digit in enumerate(reversed(arr)))
 #
