@@ -52,8 +52,8 @@ print(f'{a} => {answer}')
 # ---
 # and now - GOOD solutions
 # +++
-# +++ but I need to LEARN it
-# import itertools
+# +++ I am understand now
+# import itertools - it`s not need
 # def next_bigger(n):
 #     s = list(str(n))
 #     for i in range(len(s)-2,-1,-1):
@@ -66,7 +66,9 @@ print(f'{a} => {answer}')
 #             return int("".join(s))
 #     return -1
 # +++
-# +++ but I need to LEARN it
+# +++ I am understand now
+# but this solution is very difficult
+# but I`m understand that use 'comprehension' & 'slice'
 # def next_bigger(n):
 #   n = str(n)[::-1]
 #   try:
@@ -76,7 +78,9 @@ print(f'{a} => {answer}')
 #   except:
 #     return -1
 # +++
-# +++ but I need to LEARN it
+# +++ I`m understand now
+# but interestingly in this
+# solution only "reversed" around "range"
 # def next_bigger(n):
 #     nums = list(str(n))
 #     for i in reversed(range(len(nums[:-1]))):
@@ -88,7 +92,11 @@ print(f'{a} => {answer}')
 #     return -1
 # +++
 # +++ oh my God! how it works?!
-# +++ but I need to LEARN it
+# +++ I`m understand now
+# this solution increases the input arg until
+# the digits of the new number match
+# it it`s brilliantly simple!
+# beautiful but not effective!
 # def next_bigger(n):
 #     i, ss = n, sorted(str(n))
 #
