@@ -80,7 +80,7 @@ print(f'{a} => {answer}')
 # +++
 # +++ I`m understand now
 # but interestingly in this
-# solution only "reversed" around "range"
+#   solution only "reversed" around "range"
 # def next_bigger(n):
 #     nums = list(str(n))
 #     for i in reversed(range(len(nums[:-1]))):
