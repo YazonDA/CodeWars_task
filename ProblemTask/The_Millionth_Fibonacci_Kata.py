@@ -7,7 +7,7 @@ Write an algorithm that can handle n up to 2000000.
 Your algorithm must output the exact integer answer, to full precision.
 Also, it must correctly handle negative numbers as input.
 
-!!! it`s heed Python 2.7 !!!
+!!! RuntimeError: maximum recursion depth exceeded !!!
 '''
 
 
