@@ -12,19 +12,25 @@ THIS EXPLANATION DOES NOT EXPLAIN
 
 
 def add_letters(*l):
-	letters = list(l)
-	if len(letters) == 0:
-		return 'z'
-	return chr(sum(list(map(lambda x: ord(x)%96, letters)))%26 + 96)
+    letters = list(l)
+    if len(letters) == 0:
+        return 'z'
+    ans = sum(ord(i)%96 for i in letters)%26
+    if not ans:
+        ans += 26
+    ans += 96
+    return chr(ans)
+
 
 
 a = ['y', 'c', 'b']
-asnwer = add_letters(a)
+asnwer = add_letters('z')
 print(asnwer)
 
-# add_letters('a', 'b', 'c') = 'f'
-# add_letters('a', 'b') = 'c'
-# add_letters('z') = 'z'
-# add_letters('z', 'a') = 'a'
-# add_letters('y', 'c', 'b') = 'd' # notice the letters overflowing
-# add_letters() = 'z'
+# And now! I`m very stupid! More one!
+# And it`s not good!
+# :(((
+#
+# This is right solution:
+# def add_letters(*letters):
+#    return chr( (sum(ord(c)-96 for c in letters)-1)%26 + 97)
