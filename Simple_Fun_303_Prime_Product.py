@@ -36,7 +36,8 @@ def prime_product(n):
 	return max(ans) if len(ans) else 0
 
 
-a = [[100000,1]]
+a = [[1,0], [3,0], [4,4], [5,6], [6,9], [7,10], [8,15],
+[9,14], [10,25], [11,0], [12,35], [20,91], [100,2491]]
 
 for i in a:
 	answer = prime_product(i[0])
@@ -44,3 +45,5 @@ for i in a:
 		print(answer, 'Correct!')
 	else:
 		print(answer, 'Wrong!')
+
+
