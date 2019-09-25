@@ -4,19 +4,17 @@ Tag`s - ALGORITHMS
 Instruction is here:
 https://www.codewars.com/kata/the-freeway-game/train/python'''
 
-import pysnooper
-@pysnooper.snoop()
+#import pysnooper
+#@pysnooper.snoop()
 def freeway_game(dist_km_to_exit, my_speed_kph, other_cars):
+
     ans = 0
     for i in other_cars:
-    	time_m = dist_km_to_exit / my_speed_kph
-    	time_h = (dist_km_to_exit / i[1]) + (i[0] / 60)
-    	if ((i[0] / 60) < 0 and i[1] > my_speed_kph) or ((i[0] / 60) > 0 and i[1] < my_speed_kph):
-    		pass
-    	elif time_m < time_h:
-    		ans += 1
-    	elif time_m > time_h:
-    		ans -= 1
+        dt = i[0] / 60
+        if dt < 0 and i[1] < my_speed_kph and dist_km_to_exit / my_speed_kph < dist_km_to_exit / i[1] + dt:
+            ans += 1
+        elif dt > 0 and i[1] > my_speed_kph and dist_km_to_exit / my_speed_kph > dist_km_to_exit / i[1] + dt:
+            ans -= 1
     return ans
 
 
@@ -34,7 +32,12 @@ a = [[50.0, 130.0, [[-1.0, 120.0], [-1.5, 120.0]], 2],
 [-0.7694637798801924, 118.4517526479155],
 [3.776865499920385, 110.8323427495286],
 [4.18387090751332, 116.70913433866652],
-[-4.028203610334051, 112.23064285463585]], 2]]
+[-4.028203610334051, 112.23064285463585]], 2],
+[50, 130, [[4.560581723477089, 131.77332097621616],
+[0.11607441891723624, 128.49418671247466],
+[0.6941591710190576, 133.34309421782555],
+[-2.2769042664831862, 126.2303173321057],
+[-1.7746425126551135, 113.73987649428467]], 1]]
 
 for i in a:
 	if freeway_game(i[0], i[1], i[2]) == i[3]:
@@ -42,3 +45,14 @@ for i in a:
 	else:
 		print('Wrong!')
 
+# This solution is better!
+#def freeway_game(km, kph, cars):
+#    t = km / kph
+#    c = 0
+#    for dt, speed in cars:
+#        d = km - (t - dt/60) * speed
+#        if dt <= 0:
+#            c += d > 0
+#        else:
+#            c -= d < 0
+#    return c
