@@ -1,3 +1,6 @@
+# problem with speed
+# some arguments
+
 '''CodeWars task - Simple Fun #303: Prime Product
 FUNDAMENTALS
 6 kyu
