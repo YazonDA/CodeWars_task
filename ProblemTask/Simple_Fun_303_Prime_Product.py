@@ -1,6 +1,12 @@
+<<<<<<< HEAD:ProblemTask/Simple_Fun_303_Prime_Product.py
 # PROBLEM!
 # Execution Timed Out!!!
 #################################################
+=======
+# problem with speed
+# some arguments
+
+>>>>>>> 1d848eb4b85f09ef70046c2940c2f00a356eec16:ProblemTask/Simple_Fun_303_Prime_Product.py
 '''CodeWars task - Simple Fun #303: Prime Product
 FUNDAMENTALS
 6 kyu
