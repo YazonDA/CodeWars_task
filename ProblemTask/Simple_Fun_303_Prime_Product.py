@@ -1,3 +1,6 @@
+# PROBLEM!
+# Execution Timed Out!!!
+#################################################
 '''CodeWars task - Simple Fun #303: Prime Product
 FUNDAMENTALS
 6 kyu
@@ -25,7 +28,6 @@ def prime_product(n):
 		        for j in range(i, w+1, i): a[j] = 0
 		    i += 1
 		return arr
-
 	ans = []
 	arr = prime_(n)
 	for i in arr:
