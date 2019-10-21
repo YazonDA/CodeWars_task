@@ -9,5 +9,13 @@ approximate answers (within 0.001) are good enough.'''
 
 
 def stack_height_3d(layers):
-    pass
-    
+    return ((2 / 3) ** (1 / 2)) * (layers - 1) + 1 if layers else 0
+
+
+for i in range(12):
+	answer = stack_height_3d(i)
+	print(answer)
+
+# nice solution like this
+# return layera and f(layers)
+#
