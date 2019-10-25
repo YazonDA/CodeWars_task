@@ -1,0 +1,16 @@
+'''CodeWars task - ???
+Tag`s - ???
+??? kyu
+???'''
+
+
+def ???(???):
+	pass
+
+
+ask = ???
+
+for i in range(len(ask)):
+	answer = ???(ask[i][0])
+	ans_txt = 'Correct' if answer == ask[i][1] else 'Wrong'
+	print(f'Answer {answer} is {ans_txt}!')
