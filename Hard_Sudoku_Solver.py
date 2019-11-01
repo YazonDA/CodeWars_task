@@ -10,11 +10,17 @@ invalid grid (not 9x9, cell with values not
 in the range 1~9); multiple solutions for the
 same puzzle or the puzzle is unsolvable.'''
 
-import pysnooper
+#import pysnooper
 
 
-@pysnooper.snoop()
+#@pysnooper.snoop()
 def sudoku_solver(puzzle):
+	# puzzle == prime sudoku array
+	# w_arr == minor/working sudoku array
+	working_arr = []
+	# x_prime, y_prime == coord cell of puzzle
+	# x_minor, y_minor == coord cell of w_arr
+	
 	def tst_size(s):
 		# I`m not shure that this module realy need
 		b = [len(i) for i in s]
@@ -43,32 +49,76 @@ def sudoku_solver(puzzle):
 	# becose if count(1) == 81 then it mean 'solution completed'
 
 	def create_working_arr():
-		return [[list(range(1, 10)) 
+		# создаёт рабочий массив с установленными значениями оригинала
+		w_arr = [[list(range(1, 10)) 
 						for _ in range(9)] 
 								for __ in range(9)]
+		# перебираем строки судоку
+		for y_prime in range(9):
+			# перебираем столбцы судоку
+			for x_prime in range(9):
+				# если ячейка не равна 0 (нерешённая)
+				#print(puzzle[y_prime][x_prime])
+				if puzzle[y_prime][x_prime]:
+					w_arr[y_prime][x_prime] = [puzzle[y_prime][x_prime]]
+		return w_arr
+
+	def change_string(s):
+		# если в строке есть уникальные значения (единичные)
+		# то убрать из предположений эти значения
+		#
+		#  индекс от 0 до 9 - длина строки
+		for i in range(len(s)):
+			# если длина элемента равна 1 - один элемент
+			if len(s[i]) == 1:
+				# тогда перебираем все индексы строки
+				for j in range(len(s)):
+					# сравниваем единичный элемент со всеми в строке, кроме самого себя
+					if s[i][0] in s[j] and i != j:
+						# удаляем его из ячейки, если он там нашёлся
+						s[j].remove(s[i][0])
+		#return s
 
 	def print_arr(s):
 		for i in s:
 			print(*i)
 
-	wa = create_working_arr()
-	
+	working_arr = create_working_arr()
 
-	y_prime = 0
-	# перебираем первую строку судоку
-	for x_prime in range(9):
-		# если ячейка не равна 0 (нерешённая)
-		if puzzle[y_prime][x_prime]:
-			y_minor = y_prime
-			# перебираем ячейки рабочего массива
-			for x_minor in range(9):
-				wa[y_minor][x_minor].remove(puzzle[y_prime][x_prime])
-			wa[y_prime][x_prime] = [puzzle[y_prime][x_prime]]
+	# перебираем строки и столбцы
+	for j in range(9):
+		# перебираем строки в виде строк
+		change_string(working_arr[j])
+		# перебираем столбцы в виде строк
+		change_string(list(working_arr[i][j] for i in range(9)))
+
+	# перебираем квадраты в виде строк
+	for di in range(0, 9, 3):
+		for dj in range(0, 9, 3):
+			change_string(list(working_arr[i][j] for i in range(di, di + 3) for j in range(dj, dj + 3)))	
 
 	print()
 	print_arr(puzzle)
-	print_arr(wa)
+	print_arr(working_arr)
 
+	# трансформируем формат рабочего массива в формат исходного
+	s1 = [[ working_arr[j][i][0] if len(working_arr[i][j]) == 1 else 0
+						for i in range(9)] 
+								for j in range(9)]
+
+	print()
+	print_arr(s1)
+	
+
+
+''' удаление значений из рабочего
+	y_minor = y_prime
+	# перебираем ячейки рабочего массива
+	for x_minor in range(9):
+		# если значнеие оригинала есть в рабочем, то удалить оригинал из рабочего	
+		if puzzle[y_prime][x_prime] in w_arr[y_minor][x_minor]:
+			w_arr[y_minor][x_minor].remove(puzzle[y_prime][x_prime])
+'''	
 
 ask = [[
 		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
