@@ -14,6 +14,7 @@ same puzzle or the puzzle is unsolvable.'''
 def sudoku_solver(puzzle):
 	# puzzle == prime sudoku array [0:9][0:9]
 	# working_arr == minor/working sudoku array [0:9][0:9][1~9]
+	# list_rows == list rows as rows + columns + quadrants
 	# x_prime, y_prime == coord cell of puzzle, where
 	# 0 1 2 3 4 5 6 7 8
 	# x_minor, y_minor == coord cell of w_arr
@@ -42,18 +43,20 @@ def sudoku_solver(puzzle):
 		return len(w) == w.count(p_size)
 
 	def find_num(s, n=0):
-		''' count number "n" in array
+		'''
+		count number "n" in array
 		argument:
 			array [0:9][0:9]
 			number for search
 		return:
-			number this elements'''
+			number this elements unless len==1
+		'''
 		return sum(i.count(n) for i in s if len(i) > 1)
 
 	def print_arr(s):
 		'''Print array string by string'''
-		for i in s:
-			print(*i)
+		for enu, i in enumerate(s):
+			print(f'row {enu}\n', *i)
 
 	def create_working_arr():
 		# создаёт рабочий массив с предположениями от 1 до 9
@@ -70,12 +73,38 @@ def sudoku_solver(puzzle):
 					w_arr[y_prime][x_prime] = [puzzle[y_prime][x_prime]]
 		return w_arr
 
+	def create_list_rows():
+		'''
+		transform w_arr to list_rows
+		rows range (0,9)
+		columns range(9,18)
+		quadrant range(18,27)
+		'''
+		# reset list_rows
+		list_rows = []
+		# transform rows to rows
+		for j in range(9):
+			list_rows.append(working_arr[j])
+		# transform columns to rows
+		for j in range(9):
+			list_rows.append(list(working_arr[i][j] for i in range(9)))
+		# transform quadrant to rows
+		for j in range(9):
+			dY = dq[j][0]
+			dX = dq[j][1]
+			list_rows.append(list(working_arr[i][j] 
+						for i in range(dY, dY + 3) 
+							for j in range(dX, dX + 3)))
+		return list_rows
+
 	def change_string(s):
-		'''remove unique elements from suppose in string (array)
+		'''
+		remove unique elements from suppose in string (array)
 		argument:
 			array [0:9][1~9] (position and supposes)
 		return:
-			None'''
+			None
+		'''
 		# index from 0 to 8
 		for i in range(len(s)):
 			# if in this position only one suppose
@@ -87,40 +116,6 @@ def sudoku_solver(puzzle):
 						# remove from cell (position)
 						s[j].remove(s[i][0])
 
-	# ============ plan work ====================
-	'''
-		1. расставить предположения во всех пустых клетках
-		2. убрать из предположения решёные ячейки (одиночки)
-			2.1 строки
-			2.2 столбцы
-			2.3 квадраты
-		3. проверить решений стало больше
-			если да, то вернуться к 2.
-		4. проверить уникальные предположения
-			4.1 строки
-			4.2 столбцы
-			4.3 квадраты
-				если нашёл, то
-				заменить предположение на найденный уникум
-				вернуться к 3.
-		5. проверить пары (одинаковые пары длиной 2)
-			5.1 строки
-			5.2 столбцы
-			5.3 квадраты
-				если нашёл, то
-				убрать пару из ДАННОЙ формы (строка и т.п.) кроме оригинала
-				вернуться к 3.
-		6. проверить пары (одинаковые пары длиной >2)
-			6.1 строки
-			6.2 столбцы
-				если в одном квадрате, то
-				удалить пару из квадрата (кроме "оригинала")
-				вернуться к 3.
-			6.3 квадраты
-				если в одной строке/столбце, то
-				удалить пару из строки/столбца (кроме "оригинала")
-				вернуться к 3.
-	'''
 	# ============ start work ====================
 	
 	# testing size of sudoku grid
@@ -130,7 +125,6 @@ def sudoku_solver(puzzle):
 
 	# count given in task
 	f_ans = 81 - sum(i.count(0) for i in puzzle)
-	print(f'f_ans == {f_ans}')
 	# if given<17 then task havn`t solutions
 	if f_ans < 17:
 		print('Too little given! This Sudoku have not solution!')
@@ -139,6 +133,9 @@ def sudoku_solver(puzzle):
 	# create and fill minor/working sudoku array [0:9][0:9][1~9]
 	working_arr = create_working_arr()
 	
+	# create list_rows
+	list_rows = create_list_rows()
+
 	# remove unique elements from all cells/columns/quadrants
 	for j in range(9):
 		# for rows as rows
@@ -146,11 +143,11 @@ def sudoku_solver(puzzle):
 		# for columns as rows
 		change_string(list(working_arr[i][j] for i in range(9)))
 		# for quadrant as rows
-		di = dq[j][0]
-		dj = dq[j][1]
+		dY = dq[j][0]
+		dX = dq[j][1]
 		change_string(list(working_arr[i][j] 
-					for i in range(di, di + 3) 
-						for j in range(dj, dj + 3)))	
+					for i in range(dY, dY + 3) 
+						for j in range(dX, dX + 3)))	
 
 	# search unique supposes
 	# for each suppose
@@ -177,10 +174,24 @@ def sudoku_solver(puzzle):
 			if flag:
 				print(f'Unique suppose is {supp} NOT find it in row&column&quadrant {j + 1}!')
 
+	print(f'puzzle')
 	print_arr(puzzle)
 	print()
+	print(f'working_arr')
 	print_arr(working_arr)
-
+	print()
+	#list_rows[3][3] = ['WTF!']
+	#list_rows[2][2] = ['_!_']
+	list_rows[22][0] = ['!--------!']
+	print(f'working_arr')
+	print_arr(working_arr)
+	list_rows = create_list_rows()
+	#print(f'list_rows')
+	#print_arr(list_rows)
+	print()
+	print(f'working_arr')
+	print_arr(working_arr)
+	
 
 '''
 	print('All right for now!\n:)')
