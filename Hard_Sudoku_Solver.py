@@ -13,8 +13,7 @@ same puzzle or the puzzle is unsolvable.'''
 
 def sudoku_solver(puzzle):
 	# puzzle == prime sudoku array [0:9][0:9]
-	# w_arr == minor/working sudoku array [0:9][0:9][1~9]
-	working_arr = []
+	# working_arr == minor/working sudoku array [0:9][0:9][1~9]
 	# x_prime, y_prime == coord cell of puzzle, where
 	# 0 1 2 3 4 5 6 7 8
 	# x_minor, y_minor == coord cell of w_arr
@@ -57,7 +56,7 @@ def sudoku_solver(puzzle):
 			print(*i)
 
 	def create_working_arr():
-		# создаёт рабочий массив с установленными значениями оригинала
+		# создаёт рабочий массив с предположениями от 1 до 9
 		w_arr = [[list(range(1, p_size + 1)) 
 						for _ in range(p_size)] 
 								for __ in range(p_size)]
@@ -67,6 +66,7 @@ def sudoku_solver(puzzle):
 			for x_prime in range(p_size):
 				# если ячейка не равна 0 (нерешённая)
 				if puzzle[y_prime][x_prime]:
+					# то установить в неё [значение оригинала]
 					w_arr[y_prime][x_prime] = [puzzle[y_prime][x_prime]]
 		return w_arr
 
@@ -78,7 +78,7 @@ def sudoku_solver(puzzle):
 			None'''
 		# index from 0 to 8
 		for i in range(len(s)):
-			# if in this position onli one suppose
+			# if in this position only one suppose
 			if len(s[i]) == 1:
 				# then check all string for the match
 				for j in range(len(s)):
@@ -87,41 +87,41 @@ def sudoku_solver(puzzle):
 						# remove from cell (position)
 						s[j].remove(s[i][0])
 
-# ============ plan work ====================
-'''
-	1. расставить предположения во всех пустых клетках
-	2. убрать из предположения решёные ячейки (одиночки)
-		2.1 строки
-		2.2 столбцы
-		2.3 квадраты
-	3. проверить решений стало больше
-		если да, то вернуться к 2.
-	4. проверить уникальные предположения
-		4.1 строки
-		4.2 столбцы
-		4.3 квадраты
-			если нашёл, то
-			заменить предположение на найденный уникум
-			вернуться к 3.
-	5. проверить пары (одинаковые пары длиной 2)
-		5.1 строки
-		5.2 столбцы
-		5.3 квадраты
-			если нашёл, то
-			убрать пару из ДАННОЙ формы (строка и т.п.) кроме оригинала
-			вернуться к 3.
-	6. проверить пары (одинаковые пары длиной >2)
-		6.1 строки
-		6.2 столбцы
-			если в одном квадрате, то
-			удалить пару из квадрата (кроме "оригинала")
-			вернуться к 3.
-		6.3 квадраты
-			если в одной строке/столбце, то
-			удалить пару из строки/столбца (кроме "оригинала")
-			вернуться к 3.
-'''
-# ============ start work ====================
+	# ============ plan work ====================
+	'''
+		1. расставить предположения во всех пустых клетках
+		2. убрать из предположения решёные ячейки (одиночки)
+			2.1 строки
+			2.2 столбцы
+			2.3 квадраты
+		3. проверить решений стало больше
+			если да, то вернуться к 2.
+		4. проверить уникальные предположения
+			4.1 строки
+			4.2 столбцы
+			4.3 квадраты
+				если нашёл, то
+				заменить предположение на найденный уникум
+				вернуться к 3.
+		5. проверить пары (одинаковые пары длиной 2)
+			5.1 строки
+			5.2 столбцы
+			5.3 квадраты
+				если нашёл, то
+				убрать пару из ДАННОЙ формы (строка и т.п.) кроме оригинала
+				вернуться к 3.
+		6. проверить пары (одинаковые пары длиной >2)
+			6.1 строки
+			6.2 столбцы
+				если в одном квадрате, то
+				удалить пару из квадрата (кроме "оригинала")
+				вернуться к 3.
+			6.3 квадраты
+				если в одной строке/столбце, то
+				удалить пару из строки/столбца (кроме "оригинала")
+				вернуться к 3.
+	'''
+	# ============ start work ====================
 	
 	# testing size of sudoku grid
 	if not tst_size(puzzle):
@@ -136,10 +136,10 @@ def sudoku_solver(puzzle):
 		print('Too little given! This Sudoku have not solution!')
 		return
 
-	# create minor/working sudoku array [0:9][0:9][1~9]
+	# create and fill minor/working sudoku array [0:9][0:9][1~9]
 	working_arr = create_working_arr()
 	
-	# remove unique elements
+	# remove unique elements from all cells/columns/quadrants
 	for j in range(9):
 		# for rows as rows
 		change_string(working_arr[j])
