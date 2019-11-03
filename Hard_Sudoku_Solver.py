@@ -31,8 +31,14 @@ def sudoku_solver(puzzle):
 	p_size = 9
 	# number of found answers
 	f_ans = 0
-	
-	def tst_size(s):
+
+	#==============def==============
+	def print_arr(s):
+		'''Print array string by string'''
+		for enu, i in enumerate(s):
+			print(f'row {enu+1}\n', *i)
+
+	def test_size(s):
 		'''testing size of sudoku grid
 		argument:
 			array [0:9][0:9]
@@ -42,60 +48,51 @@ def sudoku_solver(puzzle):
 		w = [len(i) for i in s]
 		return len(w) == w.count(p_size)
 
-	def find_num(s, n=0):
+	def test_number_answer(s):
 		'''
-		count number "n" in array
-		argument:
-			array [0:9][0:9]
-			number for search
-		return:
-			number this elements unless len==1
+		IF number > 17 and answer in [1:9]
+		THEN return True
+		ELSE return False
 		'''
-		return sum(i.count(n) for i in s if len(i) > 1)
+		num = 0
+		for column in range(p_size):
+			for row in range(p_size):
+				if s[column][row] not in range(1, 10):
+					if s[column][row] != 0:
+						return False
+				else:
+					num += 1
+		return num >= 17
 
-	def print_arr(s):
-		'''Print array string by string'''
-		for enu, i in enumerate(s):
-			print(f'row {enu}\n', *i)
-
-	def create_working_arr():
+	def create_w_arr():
+		'''
+		create, fill and return minor/working sudoku array
+		return "w_arr"
+		'''
 		# создаёт рабочий массив с предположениями от 1 до 9
-		w_arr = [[list(range(1, p_size + 1)) 
+		s = [[list(range(1, p_size + 1)) 
 						for _ in range(p_size)] 
 								for __ in range(p_size)]
 		# перебираем строки судоку
-		for y_prime in range(p_size):
+		for row in range(p_size):
 			# перебираем столбцы судоку
-			for x_prime in range(p_size):
+			for column in range(p_size):
 				# если ячейка не равна 0 (нерешённая)
-				if puzzle[y_prime][x_prime]:
+				if puzzle[row][column]:
 					# то установить в неё [значение оригинала]
-					w_arr[y_prime][x_prime] = [puzzle[y_prime][x_prime]]
-		return w_arr
+					s[row][column] = [puzzle[row][column]]
+		return s
 
-	def create_list_rows():
+	def count_ans():
 		'''
-		transform w_arr to list_rows
-		rows range (0,9)
-		columns range(9,18)
-		quadrant range(18,27)
+		Count number answer in w_arr (count cells with len==1)
+		return "f_ans"
 		'''
-		# reset list_rows
-		list_rows = []
-		# transform rows to rows
-		for j in range(9):
-			list_rows.append(working_arr[j])
-		# transform columns to rows
-		for j in range(9):
-			list_rows.append(list(working_arr[i][j] for i in range(9)))
-		# transform quadrant to rows
-		for j in range(9):
-			dY = dq[j][0]
-			dX = dq[j][1]
-			list_rows.append(list(working_arr[i][j] 
-						for i in range(dY, dY + 3) 
-							for j in range(dX, dX + 3)))
-		return list_rows
+		# создаёт рабочий массив с предположениями от 1 до 9
+		s = [1 if len(w_arr[column][row]) == 1 else 0 
+						for column in range(p_size) 
+								for row in range(p_size)]
+		return sum(s)
 
 	def change_string(s):
 		'''
@@ -116,92 +113,110 @@ def sudoku_solver(puzzle):
 						# remove from cell (position)
 						s[j].remove(s[i][0])
 
-	# ============ start work ====================
-	
-	# testing size of sudoku grid
-	if not tst_size(puzzle):
+	def clean_extra_suppose():
+		'''
+		remove extra supposes from some "string"
+		if it "strings" have a single suppose
+		'''
+		for j in range(9):
+			# for rows as rows
+			change_string(w_arr[j])
+			# for columns as rows
+			change_string(list(w_arr[i][j] for i in range(9)))
+			# for quadrant as rows
+			dY = dq[j][0]
+			dX = dq[j][1]
+			change_string(list(w_arr[i][j] 
+						for i in range(dY, dY + 3) 
+							for j in range(dX, dX + 3)))
+
+	def unique_look_clean(w_arr):
+		'''
+		looking unique suppose
+		change this unique
+		return
+			False if it is not
+			True if it is
+		'''
+		def find_num(s, n=0):
+			'''
+			count number "n" in array
+			argument:
+				array [0:9][0:9]
+				number for search
+			return:
+				number this elements unless len==1
+			'''
+			return [i.count(n) if len(i) > 1 else 0 for i in s]
+
+		for supp in range(1,10):
+			# in each row & column & quadrant
+			for j in range(9):
+				# for rows as rows
+				ww = find_num(w_arr[j], supp)
+				if  sum(ww) == 1:
+					print(f'Unique suppose is {supp} find it in row {j + 1} in column {ww.index(1) + 1}!')
+					w_arr[j][ww.index(1)] = [supp]
+					return True
+				# for columns as rows
+				ww = find_num(list(w_arr[i][j] for i in range(9)), supp)
+				if sum(ww) == 1:
+					print(f'Unique suppose is {supp} find it in column {j + 1} in row {ww.index(1) + 1}!')
+					w_arr[ww.index(1)][j] = [supp]
+					return True
+				# for quadrant as rows
+				di = dq[j][0]
+				dj = dq[j][1]
+				ww = find_num(list(w_arr[i][j] 
+						for i in range(di, di + 3) 
+							for j in range(dj, dj + 3)))
+				if sum(ww) == 1:
+					print(f'Unique suppose is {supp} find it in quadrant {j + 1} in index {ww.index(1) + 1}!')
+					r, c = divmod(ww.index(1), 3)
+					print(f'This mean  row {r + di*3} column {c + dj*3}')
+					w_arr[r + di*3][c + dj*3] = [supp]
+					return True			
+		return False 
+
+	def search_set(s_str, s_set):
+		'''
+		looking "s_set" in "s_str"
+				[1]		[[1, 2, 3], [4, 5], [2, 5], [8]]
+		repeating "len(s_set)" times
+				must have 1 times
+		return	-1 if it is not
+				int if it is (position)
+				0
+		'''
+		pass
+
+	#=============progr=============
+	if not test_size(puzzle):
 		print('Wrong size of Sudoku grid!')
 		return
 
-	# count given in task
-	f_ans = 81 - sum(i.count(0) for i in puzzle)
-	# if given<17 then task havn`t solutions
-	if f_ans < 17:
-		print('Too little given! This Sudoku have not solution!')
+	if not test_number_answer(puzzle):
+		print('Very little given! Solution impossible!')
 		return
 
-	# create and fill minor/working sudoku array [0:9][0:9][1~9]
-	working_arr = create_working_arr()
+	w_arr = create_w_arr()
+	f_ans = count_ans()
+
+	while f_ans < 81:
+		print(count_ans())
+		clean_extra_suppose()
+		print_arr(w_arr)
 	
-	# create list_rows
-	list_rows = create_list_rows()
-
-	# remove unique elements from all cells/columns/quadrants
-	for j in range(9):
-		# for rows as rows
-		change_string(working_arr[j])
-		# for columns as rows
-		change_string(list(working_arr[i][j] for i in range(9)))
-		# for quadrant as rows
-		dY = dq[j][0]
-		dX = dq[j][1]
-		change_string(list(working_arr[i][j] 
-					for i in range(dY, dY + 3) 
-						for j in range(dX, dX + 3)))	
-
-	# search unique supposes
-	# for each suppose
-	for supp in range(1,10):
-		# in each row & column & quadrant
-		for j in range(9):
-			flag = True
-			# for rows as rows
-			if find_num(working_arr[j], supp) == 1:
-				flag = False
-				print(f'Unique suppose is {supp} find it in row {j + 1}!')
-			# for columns as rows
-			if find_num(list(working_arr[i][j] for i in range(9)), supp) == 1:
-				flag = False
-				print(f'Unique suppose is {supp} find it in column {j + 1}!')
-			# for quadrant as rows
-			di = dq[j][0]
-			dj = dq[j][1]
-			if find_num(list(working_arr[i][j] 
-					for i in range(di, di + 3) 
-						for j in range(dj, dj + 3))) == 1:
-				flag = False
-				print(f'Unique suppose is {supp} find it in quadrant {j + 1}!')
-			if flag:
-				print(f'Unique suppose is {supp} NOT find it in row&column&quadrant {j + 1}!')
-
-	print(f'puzzle')
-	print_arr(puzzle)
-	print()
-	print(f'working_arr')
-	print_arr(working_arr)
-	print()
-	#list_rows[3][3] = ['WTF!']
-	#list_rows[2][2] = ['_!_']
-	list_rows[22][0] = ['!--------!']
-	print(f'working_arr')
-	print_arr(working_arr)
-	list_rows = create_list_rows()
-	#print(f'list_rows')
-	#print_arr(list_rows)
-	print()
-	print(f'working_arr')
-	print_arr(working_arr)
-	
-
-'''
-	print('All right for now!\n:)')
-
-	print()
-	print_arr(puzzle)
-
-	print()
-	print_arr(working_arr)
-'''
+		if unique_look_clean(w_arr):
+			input()
+			continue
+		'''while double_solid(w_arr):
+									remove_unique_double_solid(w_arr)
+						
+								while double_mixed(w_arr):
+									remove_unique_double_mixed(w_arr)'''
+		f_ans +=1
+		input()
 
 
 
