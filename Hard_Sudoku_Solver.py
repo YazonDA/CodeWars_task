@@ -1,293 +1,70 @@
-'''CodeWars task - Hard Sudoku Solver
-Tag`s - PUZZLES GAMES ALGORITHMS VALIDATION
-2 kyu
-Write a function that solves sudoku puzzles
-of any difficulty. The function will take a
-sudoku grid and it should return a 9x9 array
-with the proper answer for the puzzle.
-Or it should raise an error in cases of:
-invalid grid (not 9x9, cell with values not
-in the range 1~9); multiple solutions for the
-same puzzle or the puzzle is unsolvable.'''
+# make base for solve
+	# test size grid in task
+tst_size(puzzle)
+	# test given in task
+	# if less then 17, then task hav`nt solutions
+find_num(puzzle)
+	# count number of found answers
+f_ans = 81 - find_num(puzzle)
+	# create minor array
+working_arr = []
+	# fill supposes into w_arr
+create_working_arr()
 
+while f_ans < 81:
+	"count number answers"
+	"maybe I need anover module"
+	"becose i need to count [len==1]"
+	f_ans_next = 81 - find_num(working_arr)
 
-def sudoku_solver(puzzle):
-	# puzzle == prime sudoku array [0:9][0:9]
-	# working_arr == minor/working sudoku array [0:9][0:9][1~9]
-	# list_rows == list rows as rows + columns + quadrants
-	# x_prime, y_prime == coord cell of puzzle, where
-	# 0 1 2 3 4 5 6 7 8
-	# x_minor, y_minor == coord cell of w_arr
-	# dq == quadrant in array, where:
-	# 0 1 2
-	# 3 4 5
-	# 6 7 8
-	dq = {
-		0: [0, 0], 1: [0, 3], 2: [0, 6],
-		3: [3, 0], 4: [3, 3], 5: [3, 6],
-		6: [6, 0], 7: [6, 3], 8: [6, 6]
-		}
-	# p_size == size of sudoku grid
-	p_size = 9
-	# number of found answers
-	f_ans = 0
+	"if more answers"
+	if f_ans_next > f_ans:
+		"remove unique elemements from supposes"
+		f_ans = f_ans_next
+		continue
 
-	#==============def==============
-	def print_arr(s):
-		'''Print array string by string'''
-		for enu, i in enumerate(s):
-			print(f'row {enu+1}\n', *i)
+	"if finding unique in supposes"
+		"replace unique in supposes by [suppose]"
+		continue
+	
+	"if finding double in supposes"
+		"remove double from supposes"
+		continue
 
-	def print_sudoku_simple(s):
-		'''Print array string by string without suppose'''
-		for row in (s):
-			print()
-			for column in row:
-				if len(column) == 1:
-					print(*column, end=' ')
-				else:
-					print(0, end=' ')
-
-	def test_size(s):
-		'''testing size of sudoku grid
-		argument:
-			array [0:9][0:9]
-		return:
-			True - if size of sudoku grid is p_size by p_size
-			False - for else'''
-		w = [len(i) for i in s]
-		return len(w) == w.count(p_size)
-
-	def test_number_answer(s):
-		'''
-		IF number > 17 and answer in [1:9]
-		THEN return True
-		ELSE return False
-		'''
-		num = 0
-		for column in range(p_size):
-			for row in range(p_size):
-				if s[column][row] not in range(1, 10):
-					if s[column][row] != 0:
-						return False
-				else:
-					num += 1
-		return num >= 17
-
-	def create_w_arr():
-		'''
-		create, fill and return minor/working sudoku array
-		return "w_arr"
-		'''
-		# создаёт рабочий массив с предположениями от 1 до 9
-		s = [[list(range(1, p_size + 1)) 
-						for _ in range(p_size)] 
-								for __ in range(p_size)]
-		# перебираем строки судоку
-		for row in range(p_size):
-			# перебираем столбцы судоку
-			for column in range(p_size):
-				# если ячейка не равна 0 (нерешённая)
-				if puzzle[row][column]:
-					# то установить в неё [значение оригинала]
-					s[row][column] = [puzzle[row][column]]
-		return s
-
-	def count_ans():
-		'''
-		Count number answer in w_arr (count cells with len==1)
-		return "f_ans"
-		'''
-		# создаёт рабочий массив с предположениями от 1 до 9
-		s = [1 if len(w_arr[column][row]) == 1 else 0 
-						for column in range(p_size) 
-								for row in range(p_size)]
-		return sum(s)
-
-	def change_string(s):
-		'''
-		remove unique elements from suppose in string (array)
-		argument:
-			array [0:9][1~9] (position and supposes)
-		return:
-			None
-		'''
-		# index from 0 to 8
-		for i in range(len(s)):
-			# if in this position only one suppose
-			if len(s[i]) == 1:
-				# then check all string for the match
-				for j in range(len(s)):
-					# self except
-					if s[i][0] in s[j] and i != j:
-						# remove from cell (position)
-						s[j].remove(s[i][0])
-
-	def clean_extra_suppose():
-		'''
-		remove extra supposes from some "string"
-		if it "strings" have a single suppose
-		'''
-		for j in range(9):
-			# for rows as rows
-			change_string(w_arr[j])
-			# for columns as rows
-			change_string(list(w_arr[i][j] for i in range(9)))
-			# for quadrant as rows
-			dY = dq[j][0]
-			dX = dq[j][1]
-			change_string(list(w_arr[i][j] 
-						for i in range(dY, dY + 3) 
-							for j in range(dX, dX + 3)))
-
-	def unique_look_clean(w_arr):
-		'''
-		looking unique suppose
-		change this unique
-		return
-			False if it is not
-			True if it is
-		'''
-		def find_num(s, n=0):
-			'''
-			count number "n" in array
-			argument:
-				array [0:9][0:9]
-				number for search
-			return:
-				number this elements unless len==1
-			'''
-			return [i.count(n) if len(i) > 1 else 0 for i in s]
-
-		for supp in range(1,10):
-			# in each row & column & quadrant
-			for j in range(9):
-				# for rows as rows
-				ww = find_num(w_arr[j], supp)
-				if  sum(ww) == 1:
-					print(f'Unique suppose is {supp} find it in row {j + 1} in column {ww.index(1) + 1}!')
-					w_arr[j][ww.index(1)] = [supp]
-					return True
-				# for columns as rows
-				ww = find_num(list(w_arr[i][j] for i in range(9)), supp)
-				if sum(ww) == 1:
-					print(f'Unique suppose is {supp} find it in column {j + 1} in row {ww.index(1) + 1}!')
-					w_arr[ww.index(1)][j] = [supp]
-					return True
-				# for quadrant as rows
-				di = dq[j][0]
-				dj = dq[j][1]
-				ww = find_num(list(w_arr[i][j] 
-						for i in range(di, di + 3) 
-							for j in range(dj, dj + 3)))
-				if sum(ww) == 1:
-					print(f'Unique suppose is {supp} find it in quadrant {j + 1} in index {ww.index(1) + 1}!')
-					r, c = divmod(ww.index(1), 3)
-					print(f'This mean  row {r + di*3} column {c + dj*3}')
-					w_arr[r + di*3][c + dj*3] = [supp]
-					return True			
-		return False 
-
-	def clean_extra_double():
-		'''
-		remove extra double-supposes from some "string"
-		if it "strings" have a single suppose
-		'''
-		for j in range(9):
-			# for rows as rows
-			change_string_simple_double(w_arr[j])
-			# for columns as rows
-			change_string_simple_double(list(w_arr[i][j] for i in range(9)))
-			# for quadrant as rows
-			dY = dq[j][0]
-			dX = dq[j][1]
-			change_string_simple_double(list(w_arr[i][j] 
-						for i in range(dY, dY + 3) 
-							for j in range(dX, dX + 3)))
-
-	def change_string_simple_double(s):
-		'''
-		remove double elements from suppose in string (array)
-		argument:
-			array [0:9][1~9] (position and supposes)
-		return:
-			None
-		'''
-		# index from 0 to 8
-		for i in range(len(s)):
-			# if was finding "correct" double
-			if len(s[i]) == 2 and s.count(s[i]) == 2:
-				# finding double
-				# it`s need to remove
-				for j in range(len(s)):
-					# self except
-					if s[i][0] in s[j] and s[i] != s[j]:
-						# remove from cell (position)
-						s[j].remove(s[i][0])
-					if s[i][1] in s[j] and s[i] != s[j]:
-						# remove from cell (position)
-						s[j].remove(s[i][1])
-
-
-	#=============progr=============
-	if not test_size(puzzle):
-		print('Wrong size of Sudoku grid!')
-		return
-
-	if not test_number_answer(puzzle):
-		print('Very little given! Solution impossible!')
-		return
-
-	w_arr = create_w_arr()
-	#f_ans = count_ans()
-
-	while f_ans < 81:
-		print(count_ans())
-		while f_ans != count_ans():
-			f_ans = count_ans()
-			clean_extra_suppose()
-		print_arr(w_arr)
-		print_sudoku_simple(w_arr)
-		input() # pause for looking
-
-		if unique_look_clean(w_arr):
-			continue
-
-		f_ans = 0
-		while f_ans != count_ans():
-			f_ans = count_ans()
-			clean_extra_double()
-		print_arr(w_arr)
-		print_sudoku_simple(w_arr)
-		input() # pause for looking
-		
-
-
-
-
-ask = [[
-		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
-		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
-		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
-		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
-		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
-		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
-		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
-		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
-		[1, 0, 0, 0, 0, 2, 5, 0, 0]
-		], [
-		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
-		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
-		[2, 1, 9, 3, 8, 5, 4, 6, 7], 
-		[4, 6, 2, 5, 3, 1, 8, 7, 9], 
-		[9, 3, 1, 2, 7, 8, 6, 4, 5], 
-		[8, 5, 7, 9, 4, 6, 2, 1, 3], 
-		[5, 9, 8, 4, 1, 3, 7, 2, 6],
-		[6, 2, 4, 7, 5, 9, 3, 8, 1],
-		[1, 7, 3, 8, 6, 2, 5, 9, 4]]]
-
-
-
-
-sudoku_solver(ask[0])
-
+	"if finding wide double in supposes"
+		"remove double from supposes"
+		continue
+# ============ plan work ====================
+	'''
+		1. расставить предположения во всех пустых клетках
+		2. убрать из предположения решёные ячейки (одиночки)
+			2.1 строки
+			2.2 столбцы
+			2.3 квадраты
+		3. проверить решений стало больше
+			если да, то вернуться к 2.
+		4. проверить уникальные предположения
+			4.1 строки
+			4.2 столбцы
+			4.3 квадраты
+				если нашёл, то
+				заменить предположение на найденный уникум
+				вернуться к 3.
+		5. проверить пары (одинаковые пары длиной 2)
+			5.1 строки
+			5.2 столбцы
+			5.3 квадраты
+				если нашёл, то
+				убрать пару из ДАННОЙ формы (строка и т.п.) кроме оригинала
+				вернуться к 3.
+		6. проверить пары (одинаковые пары длиной >2)
+			6.1 строки
+			6.2 столбцы
+				если в одном квадрате, то
+				удалить пару из квадрата (кроме "оригинала")
+				вернуться к 3.
+			6.3 квадраты
+				если в одной строке/столбце, то
+				удалить пару из строки/столбца (кроме "оригинала")
+				вернуться к 3.
+	'''
