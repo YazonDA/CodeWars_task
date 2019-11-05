@@ -205,7 +205,7 @@ def sudoku_solver(puzzle):
 						for i in range(dY, dY + 3) 
 							for j in range(dX, dX + 3)))
 
-	def change_string_simple_double(s):
+	def change_string_simple_double(s, length_suppose=2):
 		'''
 		remove double elements from suppose in string (array)
 		argument:
@@ -216,17 +216,15 @@ def sudoku_solver(puzzle):
 		# index from 0 to 8
 		for i in range(len(s)):
 			# if was finding "correct" double
-			if len(s[i]) == 2 and s.count(s[i]) == 2:
+			if len(s[i]) == length_suppose and s.count(s[i]) == length_suppose:
 				# finding double
 				# it`s need to remove
 				for j in range(len(s)):
 					# self except
-					if s[i][0] in s[j] and s[i] != s[j]:
-						# remove from cell (position)
-						s[j].remove(s[i][0])
-					if s[i][1] in s[j] and s[i] != s[j]:
-						# remove from cell (position)
-						s[j].remove(s[i][1])
+					for w in range(length_suppose):
+						if s[i][w] in s[j] and s[i] != s[j]:
+							# remove from cell (position)
+							s[j].remove(s[i][w])
 
 	def clean_wide_extra_double():
 		'''

@@ -97,7 +97,7 @@ def sudoku_solver(puzzle):
 						for column in range(p_size) 
 								for row in range(p_size))
 
-	def unique_look_clean(s):
+	def unique_look_clean(s, lngth_spps):
 		'''
 		remove unique elements from suppose in string (array)
 		argument:
@@ -108,30 +108,31 @@ def sudoku_solver(puzzle):
 		# index from 0 to 8
 		for i in range(len(s)):
 			# if in this position only one suppose
-			if len(s[i]) == 1:
+			if len(s[i]) == lngth_spps and s.count(s[i]) == lngth_spps:
 				# then check all string for the match
 				for j in range(len(s)):
 					# self except
-					if s[i][0] in s[j] and i != j:
-						# remove from cell (position)
-						s[j].remove(s[i][0])
+					for w in range(lngth_spps):
+						if s[i][w] in s[j] and s[i] != s[j]:
+							# remove from cell (position)
+							s[j].remove(s[i][w])
 
-	def clean_extra_suppose():
+	def clean_extra_suppose(length_suppose=1):
 		'''
 		remove extra supposes from some "string"
-		if it "strings" have a single suppose
+		if it "strings" have only suppose
 		'''
 		for j in range(9):
 			# for rows as rows
-			unique_look_clean(supposis_array[j])
+			unique_look_clean(supposis_array[j], length_suppose)
 			# for columns as rows
-			unique_look_clean(list(supposis_array[i][j] for i in range(9)))
+			unique_look_clean(list(supposis_array[i][j] for i in range(9)), length_suppose)
 			# for quadrant as rows
 			dY = d_quadrant[j][0]
 			dX = d_quadrant[j][1]
 			unique_look_clean(list(supposis_array[i][j] 
 						for i in range(dY, dY + 3) 
-							for j in range(dX, dX + 3)))
+							for j in range(dX, dX + 3)), length_suppose)
 
 	def unique_make_singular():
 		'''
@@ -182,24 +183,6 @@ def sudoku_solver(puzzle):
 					return True			
 		return False 
 
-	'''
-	if f_ans_next > f_ans:
-		"remove unique elemements from supposes"
-		f_ans = f_ans_next
-		continue
-
-	"if finding unique in supposes"
-		"replace unique in supposes by [suppose]"
-		continue
-	
-	"if finding double in supposes"
-		"remove double from supposes"
-		continue
-
-	"if finding wide double in supposes"
-		"remove double from supposes"
-		continue
-	'''
 	# ============ work ====================
 	'''
 	NN01-------------------------ТЕСТ-ЗАДАНИЯ---------
@@ -213,7 +196,6 @@ def sudoku_solver(puzzle):
 	if not test_given():
 		print('Wrong number or self given! Solution impossible!')
 		return
-
 	'''
 	NN02-------------------------ПОДГОТОВКА-МАССИВА---
 			создать рабочий массив (массив предположений)
@@ -227,13 +209,13 @@ def sudoku_solver(puzzle):
 	print(f'After create_supposis_array')
 	print_arr(supposis_array)
 	print_sudoku(supposis_array)
-
 	'''
-	NN03-------------------------ОСНОВНОЙ-ЦИКЛ--------
+	NN03-------------------------ОСНОВНОЙ-ЦИКЛ------------
 			цикл ПОКА РЕШЕНИЙ меньше 81:
-			НАЧАЛО
-
-	NN04-------------------------ОЧИСТКА-ОТ-РЕШЕНИЙ---
+	'''
+	while count_ans() < 81:
+		'''
+		NN04-------------------------ОЧИСТКА-ОТ-РЕШЕНИЙ---
 			цикл ПОКА КОЛ-ВО РЕШЕНИЙ меняется:
 			НАЧАЛО
 				если в строке/столбце/квадрате есть решение (одно предположение в ячейке),
@@ -243,55 +225,112 @@ def sudoku_solver(puzzle):
 					столбцам
 					квадратам
 			КОНЕЦ
-	'''
-	while f_ans != count_ans():
-		f_ans = count_ans()
-		clean_extra_suppose()
+		ДОРАБОТАНО!
+		Если в строке/столбце/квадрате есть предположения:
+			из N цифр,
+			длинной N элементов,
+			повторяются в этой строке/столбце/квадрате N раз
+		то удалить упоминания обо всех них в остальных ячейках
+		этой строки/столбца/квадрата
+		'''
+		for n in [1, 2, 3, 4]:
+			f_ans = 0
+			while f_ans != count_ans():
+				f_ans = count_ans()
+				clean_extra_suppose(n)
 
-	print(f'\n\ncount_ans == {count_ans()}')
-	print(f'After clean_extra_suppose')
-	print_arr(supposis_array)
-	print_sudoku(supposis_array)
+			print(f'\n\ncount_ans == {count_ans()}')
+			print(f'After clean_extra_suppose/{n}')
+			print_arr(supposis_array)
+			print_sudoku(supposis_array)
 
-	if unique_make_singular():
-		print(f'\n\ncount_ans == {count_ans()}')
-		print(f'After unique_make_singular')
-		print_arr(supposis_array)
-		print_sudoku(supposis_array)
+		'''
+		NN05-------------------------ЗАМЕНА-РЕШЁННЫХ-1----
+			если предположение уникально в строке/столбце/квадрате и НЕ уникально в своей ячейке,
+			то записать в ячейку [предположение]:
+				пройтись по предположениям от 1 до 9 и по каждому:
+					пройтись по массиву предположений по:
+						строкам
+						столбцам
+						квадратам
+
+		'''
+
+		if unique_make_singular():
+			print(f'\n\ncount_ans == {count_ans()}')
+			print(f'After unique_make_singular')
+			print_arr(supposis_array)
+			print_sudoku(supposis_array)
+		input()
 
 '''
-NN05-------------------------ЗАМЕНА-РЕШЁННЫХ-1----
-		если предположение уникально в строке/столбце/квадрате и НЕ уникально в своей ячейке,
-		то записать в ячейку [предположение]:
-			пройтись по предположениям от 1 до 9 и по каждому:
-				пройтись по массиву предположений по:
-					строкам
-					столбцам
-					квадратам
-
 NN06-------------------------ЗАМЕНА-ПАР-2---------
-		цикл ПОКА КОЛ-ВО РЕШЕНИЙ меняется:
-		НАЧАЛО
-			если в строке/столбце/квадрате есть два предположения из двух (попарно равных) элементов,
-			то удалить из остальных ячеек строки/столбца/квадрата предположения равные каждому из этих элементов
-			пройтись по массиву предположений по:
-				строкам
-				столбцам
-				квадратам
-		КОНЕЦ
-
-NN06.3-----------------------ЗАМЕНА-ТРИАД-3-------
-NN06.4-----------------------ЗАМЕНА-ТЕТРАД-4------
-NN06.5-----------------------ЗАМЕНА-ПЕНТАД-5------
-
+		Решено в NN04. Смотри "ДОРАБОТАНО"
 NN07-------------------------ЛИНИИ-И-КВАДРАТЫ-----
 
-		для строк/столбцов:
-			если какое-то предположение находится только в пределах одного квадрата
-			то удалить это предположение из остальных строк/столбцов квадрата
-		для квадратов:
-			если какое-то предположение находится только в пределах одной строки/столбца
-			то удалить это предположение из остальных ячеек строки/столбца (в других квадратах)
+	для строк/столбцов:
+		если какое-то предположение находится только в пределах одного квадрата
+		то удалить это предположение из остальных строк/столбцов квадрата
+	для квадратов:
+		если какое-то предположение находится только в пределах одной строки/столбца
+		то удалить это предположение из остальных ячеек строки/столбца (в других квадратах)
+	
+	для каждого предположения от 1 до 9
+	for spps in range(1, 10):
+		для каждой строки
+		for row in range(9):
+			для каждых ЕЁ трёх клеток
+			for column in [0, 3, 6]:
+				строка строки
+				string_row = w_arr[row]
+				дельты квадрата
+					через номер квадрата и словарь
+				num_q = (row // 3) * 3 + (column // 3)
+				dY = dq[num_q][0]
+				dX = dq[num_q][1]
+					без номера и без словаря
+				dY = (row // 3) * 3
+				dX = column // 3
+
+				строка квадрата
+				string_quadr = list(w_arr[i][j] 
+						for i in range(dY, dY + 3) 
+							for j in range(dX, dX + 3)))
+				сейчас есть координаты ячейки, которая
+				определяет строку+столбец+квадрат
+					основа: 3 ячейки (совпадают)
+				sp_main = []
+				rw_check = []
+				qd_check = []
+				for i in range(9):
+					indx = (columns + i) % 9
+					if i < 3:
+						sp_main += w_arr[row][indx]
+					else 
+						строка: проверка(6яч)
+						rw_check += w_arr[row][indx]
+						квадрат: проверка(6)
+						qd_check = []
+h_a = []
+>>> m_a = []
+>>> for i in range(len(a)):
+...     ind = (3+i)%9
+...     if i < 3:
+...             m_a += a[ind]
+...     else:
+...             h_a += a[ind]
+
+				если предположение есть в них:
+				if spss in w_arr
+				то
+					если оно есть в этой строке НО уникально в этом квадрате:
+					то удалить из оставшихся 6 ячеек строки это предположение
+					иначе ничего
+				иначе
+					если оно уникально в строке, НО еть в этом квадрате:
+					то удалить из оставшихся 6 ячеек строки это предположение
+					иначе ничего
+
 '''
 
 ask = [[
@@ -319,3 +358,28 @@ ask = [[
 
 
 sudoku_solver(ask[0])
+
+
+''' MORE SUDOKU GRID
+
+		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
+		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
+		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
+		[5, 0, 8, 4, 0, 0, 0, 1, 0], 
+		[0, 4, 2, 9, 0, 0, 0, 0, 0], 
+		[1, 0, 0, 0, 0, 0, 0, 5, 0], 
+		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
+		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
+		[0, 0, 0, 0, 0, 0, 0, 0, 8]
+
+		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
+		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
+		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
+		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
+		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
+		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
+		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
+		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
+		[1, 0, 0, 0, 0, 2, 5, 0, 0]
+
+'''
