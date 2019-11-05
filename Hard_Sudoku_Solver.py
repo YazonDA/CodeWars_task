@@ -38,6 +38,16 @@ def sudoku_solver(puzzle):
 		for enu, i in enumerate(s):
 			print(f'row {enu+1}\n', *i)
 
+	def print_sudoku_simple(s):
+		'''Print array string by string without suppose'''
+		for row in (s):
+			print()
+			for column in row:
+				if len(column) == 1:
+					print(*column, end=' ')
+				else:
+					print(0, end=' ')
+
 	def test_size(s):
 		'''testing size of sudoku grid
 		argument:
@@ -178,17 +188,46 @@ def sudoku_solver(puzzle):
 					return True			
 		return False 
 
-	def search_set(s_str, s_set):
+	def clean_extra_double():
 		'''
-		looking "s_set" in "s_str"
-				[1]		[[1, 2, 3], [4, 5], [2, 5], [8]]
-		repeating "len(s_set)" times
-				must have 1 times
-		return	-1 if it is not
-				int if it is (position)
-				0
+		remove extra double-supposes from some "string"
+		if it "strings" have a single suppose
 		'''
-		pass
+		for j in range(9):
+			# for rows as rows
+			change_string_simple_double(w_arr[j])
+			# for columns as rows
+			change_string_simple_double(list(w_arr[i][j] for i in range(9)))
+			# for quadrant as rows
+			dY = dq[j][0]
+			dX = dq[j][1]
+			change_string_simple_double(list(w_arr[i][j] 
+						for i in range(dY, dY + 3) 
+							for j in range(dX, dX + 3)))
+
+	def change_string_simple_double(s):
+		'''
+		remove double elements from suppose in string (array)
+		argument:
+			array [0:9][1~9] (position and supposes)
+		return:
+			None
+		'''
+		# index from 0 to 8
+		for i in range(len(s)):
+			# if was finding "correct" double
+			if len(s[i]) == 2 and s.count(s[i]) == 2:
+				# finding double
+				# it`s need to remove
+				for j in range(len(s)):
+					# self except
+					if s[i][0] in s[j] and s[i] != s[j]:
+						# remove from cell (position)
+						s[j].remove(s[i][0])
+					if s[i][1] in s[j] and s[i] != s[j]:
+						# remove from cell (position)
+						s[j].remove(s[i][1])
+
 
 	#=============progr=============
 	if not test_size(puzzle):
@@ -204,36 +243,38 @@ def sudoku_solver(puzzle):
 
 	while f_ans < 81:
 		print(count_ans())
-		#f_ans = count_ans()
 		while f_ans != count_ans():
 			f_ans = count_ans()
 			clean_extra_suppose()
 		print_arr(w_arr)
-	
-		if unique_look_clean(w_arr):
-			input()
-			continue
-		'''while double_solid(w_arr):
-									remove_unique_double_solid(w_arr)
-						
-								while double_mixed(w_arr):
-									remove_unique_double_mixed(w_arr)'''
-		input()
+		print_sudoku_simple(w_arr)
+		input() # pause for looking
 
+		if unique_look_clean(w_arr):
+			continue
+
+		f_ans = 0
+		while f_ans != count_ans():
+			f_ans = count_ans()
+			clean_extra_double()
+		print_arr(w_arr)
+		print_sudoku_simple(w_arr)
+		input() # pause for looking
+		
 
 
 
 
 ask = [[
-		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
-		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
-		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
-		[5, 0, 8, 4, 0, 0, 0, 1, 0], 
-		[0, 4, 2, 9, 0, 0, 0, 0, 0], 
-		[1, 0, 0, 0, 0, 0, 0, 5, 0], 
-		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
-		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
-		[0, 0, 0, 0, 0, 0, 0, 0, 8]
+		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
+		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
+		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
+		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
+		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
+		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
+		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
+		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
+		[1, 0, 0, 0, 0, 2, 5, 0, 0]
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
