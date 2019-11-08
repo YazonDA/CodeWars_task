@@ -48,6 +48,11 @@ def sudoku_solver(puzzle):
 
 	class looking:
 		
+		def simple_array(self):
+			return [[0 if len(self[row, column].suppose) > 1 
+						else self[row, column].suppose[0]
+							for column in range(self.shape[0])]
+								for row in range(self.shape[1])]
 
 		def p_arr_w(self):
 			for row in range(self.shape[0]):
@@ -57,12 +62,54 @@ def sudoku_solver(puzzle):
 			print()
 
 		def p_arr_s(self):
-			tst.prt([0 if len(self[row, column].suppose) > 1 
-						else self[row, column].suppose[0]
-							for column in range(self.shape[0])]
-								for row in range(self.shape[1]))
+			tst.prt(looking.simple_array(self))
 
-		#
+		def sum_ans(self):
+			s = looking.simple_array(self)
+			return sum(bool(s[row][column]) 
+				for column in range(len(s))
+					for row in range(len(s)))
+
+		def del_extra(self, length_suppose):
+			'''
+			remove extra supposes from row & column & square
+			return:
+				True - if make change in w_arr 
+				False - if it is not
+			'''
+			def unique_look_clean(w_str, l_s):
+				'''
+				remove unique elements from suppose in string (array)
+				argument:
+					array [0:9][1~9] (position and supposes)
+				return:
+					None
+				'''
+				
+				s = [i.suppose for i in w_str]
+				# index from 0 to 8
+				for i in range(len(s)):
+					# if in this position only one suppose
+					if len(s[i]) == l_s and s.count(s[i]) == l_s:
+						# then check all string for the match
+						for j in range(len(s)):
+							# self except
+							for w in range(l_s):
+								if s[i][w] in s[j] and s[i] != s[j]:
+									# remove from cell (position)
+									w_str[j].suppose.remove(s[i][w])
+				
+			for j in range(9):
+				#print(' for rows as rows\n')
+				unique_look_clean(self[j], length_suppose)
+				#print('for columns as rows')
+				unique_look_clean(self[:, j], length_suppose)
+				#print(f'for quadrant as rows')
+				r = j // 3
+				c = j % 3 * 3
+				unique_look_clean(self[r:r+3,c:c+3].flatten(), length_suppose)
+	
+
 
 	#=========== work ====================
 	# test [puzzle]
@@ -94,12 +141,21 @@ def sudoku_solver(puzzle):
 				w_arr[row, column].suppose = [puzzle[row][column]]
 
 	print(f'w_arr shape {w_arr.shape}')
-	#looking.p_arr_w(w_arr)
+	print(f'number of answer == {looking.sum_ans(w_arr)}')
 	looking.p_arr_s(w_arr)
 
 	#print(f'w_arr shape {w_arr.shape}')
 	#print(f'ndim {w_arr.ndim}')
+	#while looking.sum_ans(w_arr) < 81:
+	#	print(f'next loop')
+	for n in [1, 2, 3, 4]:
+		looking.del_extra(w_arr, n)
+	print(f'number of answer == {looking.sum_ans(w_arr)}')
+	looking.p_arr_s(w_arr)
+	looking.p_arr_w(w_arr)
 	
+
+
 
 ask = [[
 		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
