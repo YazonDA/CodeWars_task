@@ -13,7 +13,7 @@ import numpy as np
 
 def sudoku_solver(puzzle):
 
-	class tst:
+	class tst(object):
 		def prt(self):
 			print()
 			for i in self:
@@ -29,20 +29,17 @@ def sudoku_solver(puzzle):
 		def given(self):
 			# must to be 17 or more
 			return True
-	# test [puzzle]
-	# ////////////////////////// SERVICE CODE //////////////////////////
-	# LOOP only for readable. Remove this later
-	for _ in [1]:
-		tst.prt(puzzle)
-		if not tst.sizes(puzzle):
+
+		prt(puzzle)
+		if not sizes(puzzle):
 			print('Sizes Sudoku-array is wrong!')
 		else:
 			print('Sizes -\t\tpassed')
-		if not tst.values(puzzle):
+		if not values(puzzle):
 			print('Values of Sudoku-array is in incorrect range!')
 		else:
 			print('Values range -\tpassed')
-		if not tst.given(puzzle):
+		if not given(puzzle):
 			print('Very little data in Sudoku-array. The solution is impossible!')
 		else:
 			print('Given -\t\tpassed')
@@ -85,8 +82,10 @@ def sudoku_solver(puzzle):
 			'''
 			for row in range(self.shape[0]):
 				print(f'\nrow {row}')
-				for column in range(self.shape[1]):
+				for column, i in enumerate(range(self.shape[1])):
 					print(self[row, column].suppose, end=' ')
+					if i in [2, 5]:
+						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
 			print()
 
 		def p_arr_s(self):
@@ -186,30 +185,6 @@ def sudoku_solver(puzzle):
 						if ind:
 							str_str[ind-1].suppose = [supp]
 							return True
-					'''
-					#print(f'\n{j} ==> for rows as rows')
-					w_str = self[j]
-					ind = find_num(w_str, supp)
-					if ind:
-						#print(f'Unique suppose is {supp} find it in row {j + 1} in column {ind}!')
-						w_str[ind-1].suppose = [supp]
-						return True
-					#print(f'\n{j} ==> for columns as rows')
-					w_str = self[:, j]
-					ind = find_num(w_str, supp)
-					if ind:
-						#print(f'Unique suppose is {supp} find it in column {j + 1} in row {ind}!')
-						w_str[ind-1].suppose = [supp]
-						return True
-					#print(f'\n{j} ==> for quadrant as rows')
-					
-					w_str = self[r:r+3,c:c+3].flatten()
-					ind = find_num(w_str, supp)
-					if ind:
-						#print(f'Unique suppose is {supp} find it in quadrant {j + 1} in index {ind}!')
-						w_str[ind-1].suppose = [supp]
-						return True			
-					'''
 			return False 
 
 		def line_feat_square(self):
@@ -252,6 +227,9 @@ def sudoku_solver(puzzle):
 			return False
 
 	#=========== work ====================
+	# test [puzzle]
+	tst()
+
 	# create numpy-array of suppose (default suposes)
 	w_arr = np.array([cell(i) for i in range(81)])
 	w_arr.resize(9,9)
@@ -265,15 +243,25 @@ def sudoku_solver(puzzle):
 	print(f'\nnumber of answer == {looking.sum_ans(w_arr)}\n\n')
 
 	while looking.sum_ans(w_arr) < 81:
+		looking.p_arr_w(w_arr)
+		input()
 		print(f'\n\n=========== next loop ====================')
+		print('\n')
+		
+		# check the correcting operate (no doubles, no ? ... only doubles???)
 
 		# MODUS 1
 		# Look unique sets (of 1, 2, 3 elements) and clean extra supposes
-		for n in [1, 2, 3]:
-			looking.del_extra(w_arr, n)
-		print(f'\nlooking.del_extra - completed')
+		sum_ans = 0
+		while sum_ans < looking.sum_ans(w_arr):
+			sum_ans = looking.sum_ans(w_arr)
+			for n in [1, 2, 3]:
+				looking.del_extra(w_arr, n)
+				print(f'\nlooking.del_extra - completed')
+				print(f'number of answer == {looking.sum_ans(w_arr)}')
+				looking.p_arr_w(w_arr)
+		print(f'\nlooking.looking.del_extra - passed')
 		print(f'number of answer == {looking.sum_ans(w_arr)}')
-		
 
 		# MODUS 2
 		# look unique suppose in nonsingle cell and make singular it
@@ -281,29 +269,33 @@ def sudoku_solver(puzzle):
 			print('\nlooking.unique_make_singular - completed')
 			print(f'number of answer == {looking.sum_ans(w_arr)}')
 			continue
+		
 		print(f'\nlooking.unique_make_singular - passed')
 		print(f'number of answer == {looking.sum_ans(w_arr)}')
-
-		# MODUS 3
+		looking.p_arr_w(w_arr)
+		
+		# MODUS 3 - NOT FINISHED
 		# look unique suppose in string and clean it from quadrant. And vice versa.
 		if looking.line_feat_square(w_arr):
 			print('\nlooking.line_feat_square - completed')
 			print(f'number of answer == {looking.sum_ans(w_arr)}')
 			continue
+		
 		print(f'\nlooking.line_feat_square - passed')
 		print(f'number of answer == {looking.sum_ans(w_arr)}')
 
-
-
-
-
-
-
-
-
-
-
+		print('NOW I WILL CHANGE THE CELL [0, 1]')
+		w_arr[1, 0].suppose = [5]
 		input()
+
+
+
+
+
+
+
+
+
 
 	#=========== END of DEF ====================
 
