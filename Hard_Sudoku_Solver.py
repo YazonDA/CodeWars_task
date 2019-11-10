@@ -284,8 +284,29 @@ def sudoku_solver(puzzle):
 		print(f'\nlooking.line_feat_square - passed')
 		print(f'number of answer == {looking.sum_ans(w_arr)}')
 
+		#continue
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 1:
+				ans[cl.suppose[0]] += 1
+		print(f'answers for now {ans}')
+
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 2:
+				ans[cl.suppose[0]] += 1
+				ans[cl.suppose[1]] += 1
+		print(f'answers in double {ans}')
+
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 2 and 8 in cl.suppose:
+				print(f'index {cl.ind}')
+		print(f'answers in double {ans}')
+
+
 		print('NOW I WILL CHANGE THE CELL [0, 1]')
-		w_arr[1, 0].suppose = [5]
+		w_arr[1, 0].suppose = [7]
 		input()
 
 
@@ -300,15 +321,15 @@ def sudoku_solver(puzzle):
 	#=========== END of DEF ====================
 
 ask = [[
-		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
-		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
-		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
-		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
-		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
-		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
-		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
-		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
-		[1, 0, 0, 0, 0, 2, 5, 0, 0]
+		[0, 0, 0, 0, 0, 0, 4, 1, 0], 
+		[0, 2, 0, 1, 0, 0, 0, 0, 0], 
+		[8, 5, 0, 0, 0, 0, 0, 0, 6], 
+		[5, 0, 2, 0, 3, 0, 0, 0, 0], 
+		[7, 0, 0, 0, 8, 0, 5, 9, 0], 
+		[0, 6, 0, 0, 5, 0, 0, 0, 4], 
+		[0, 0, 0, 0, 0, 9, 0, 8, 0], 
+		[0, 1, 0, 0, 0, 2, 0, 0, 9], 
+		[0, 0, 3, 0, 0, 0, 7, 0, 0] 
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
@@ -327,7 +348,7 @@ sudoku_solver(ask[0])
 
 
 ''' MORE SUDOKU GRID
-
+minor not hard
 		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
 		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
 		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
@@ -337,7 +358,7 @@ sudoku_solver(ask[0])
 		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
 		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
 		[0, 0, 0, 0, 0, 0, 0, 0, 8]
-
+general
 		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
 		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
 		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
@@ -347,6 +368,16 @@ sudoku_solver(ask[0])
 		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
 		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
 		[1, 0, 0, 0, 0, 2, 5, 0, 0]
-
+minor hard
+		[0, 0, 0, 0, 0, 8, 0, 6, 0], 
+		[8, 0, 0, 9, 3, 0, 0, 0, 0], 
+		[0, 9, 3, 0, 0, 0, 0, 0, 0], 
+		[0, 0, 0, 0, 0, 0, 6, 0, 0], 
+		[0, 3, 0, 4, 0, 7, 8, 0, 0], 
+		[5, 0, 0, 0, 0, 0, 0, 4, 0], 
+		[0, 0, 1, 0, 9, 0, 7, 0, 0], 
+		[7, 2, 0, 0, 6, 0, 3, 0, 0], 
+		[0, 0, 0, 0, 2, 4, 0, 0, 1]
+minor hard
 
 '''
