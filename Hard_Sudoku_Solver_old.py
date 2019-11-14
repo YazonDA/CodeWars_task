@@ -11,15 +11,14 @@ in the range 1~9); multiple solutions for the
 same puzzle or the puzzle is unsolvable.'''
 import numpy as np
 
-
 def sudoku_solver(puzzle):
-	#=========== VARIABLE=================
-	
-	#=========== def =====================
-	class tst:
-		def prnt(self):
+
+	class tst(object):
+		def prt(self):
+			print()
 			for i in self:
 				print(*i)
+			print()
 		def sizes(self):
 			# must to be 9 by 9
 			return len(self) == len(self[0]) == 9
@@ -31,248 +30,306 @@ def sudoku_solver(puzzle):
 			# must to be 17 or more
 			return True
 
-	class w_arr:
-		"""docstring for w_arr"""
-		def create(self):
-			w =  list(range(1, 10))
-			p_size = len(self)
-			return [[[self[row][column]] if self[row][column] else w[:]
-						for column in range(p_size)] 
-								for row in range(p_size)]
-		
-		def print_wide(self):
-			#Print array string by string // simple option
-			for enu, i in enumerate(self):
-				print(f'row {enu+1}\n', *i)
-		
-		def count_ans(self):
-			'''
-			Count number answer in supposis_array
-			(count cells with len==1)
-			return "f_ans"
-			'''
-			p_size = len(self)
-			return sum(1 if len(self[column][row]) == 1 else 0 
-							for column in range(p_size) 
-									for row in range(p_size))
+		prt(puzzle)
+		if not sizes(puzzle):
+			print('Sizes Sudoku-array is wrong!')
+		else:
+			print('Sizes -\t\tpassed')
+		if not values(puzzle):
+			print('Values of Sudoku-array is in incorrect range!')
+		else:
+			print('Values range -\tpassed')
+		if not given(puzzle):
+			print('Very little data in Sudoku-array. The solution is impossible!')
+		else:
+			print('Given -\t\tpassed')
 
-		def clean_extra_suppose(self, l_spps):
+	class cell(object):
+		'''
+		create cell-object
+		parametrs:
+			number: int, argument unique
+			suppose: list[int], default
+		method suppose:
+			provide change objects suppose
+		'''
+		def __init__(self, ind):
+			self.ind = ind
+			self.suppose = list(range(1,10))
+
+		def suppose(self,suppose):
+			self.suppose = suppose
+
+	class looking:		
+		def simple_array(self):
+			''' Transform array to the simple form.
+			input:
+				self - numpy-array by objects
+			return:
+				list-array (like array in main task)
 			'''
-			remove extra supposes from some "string"
-			if it "strings" have only suppose
+			return [[0 if len(self[row, column].suppose) > 1 
+						else self[row, column].suppose[0]
+							for column in range(self.shape[0])]
+								for row in range(self.shape[1])]
+
+		def p_arr_w(self):
+			''' Print array row by row and counter it.
+			input:
+				self - numpy-array by objects
+			return:
+				None
 			'''
-			def unique_look_clean(s, lngth_spps):
-				'''
-				remove unique elements from suppose in string (array)
+			for row in range(self.shape[0]):
+				print(f'\nrow {row}')
+				for column, i in enumerate(range(self.shape[1])):
+					print(self[row, column].suppose, end=' ')
+					if i in [2, 5]:
+						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
+			print()
+
+		def p_arr_s(self):
+			''' Print simple form array (like array in main task).
+			input:
+				self - numpy-array by objects
+			return:
+				None
+			'''
+			tst.prt(looking.simple_array(self))
+
+		def sum_ans(self):
+			''' Count answers in array of supposes.
+			input:
+				self - numpy-array by objects
+			return:
+				Answers number
+			'''
+			s = looking.simple_array(self)
+			return sum(bool(s[row][column]) 
+				for column in range(len(s))
+					for row in range(len(s)))
+
+		def del_extra(self, length_suppose):
+			'''	Look unique sets (of 1, 2, 3 elements) and clean extra supposes like it (in each row & column & square)
+			input:
+				self - numpy-array by objects;
+				length of suppose - int (1, 2, 3)			
+			return:
+				True - if make change in w_arr 
+				False - if it is not
+			'''
+			def unique_look_clean(w_str, l_s):
+				''' Look unique elements from suppose in string (array). Then remove like it from array of supposes.
 				argument:
-					array [0:9][1~9] (position and supposes)
+					w_str - numpy-array by objects (shape (1,))
+					length of suppose - int (some like 1, 2 or 3)
 				return:
 					None
 				'''
+				s = [i.suppose for i in w_str]
 				# index from 0 to 8
 				for i in range(len(s)):
 					# if in this position only one suppose
-					if len(s[i]) == lngth_spps and s.count(s[i]) == lngth_spps:
+					if len(s[i]) == l_s and s.count(s[i]) == l_s:
 						# then check all string for the match
 						for j in range(len(s)):
 							# self except
-							for w in range(lngth_spps):
+							for w in range(l_s):
 								if s[i][w] in s[j] and s[i] != s[j]:
 									# remove from cell (position)
-									s[j].remove(s[i][w])
+									w_str[j].suppose.remove(s[i][w])
+				
 			for j in range(9):
-				# for rows as rows
-				unique_look_clean(self[j], l_spps)
-				# for columns as rows
-				unique_look_clean(list(self[i][j] for i in range(9)), l_spps)
-				# for quadrant as rows
-				dY = d_quadrant[j][0]
-				dX = d_quadrant[j][1]
-				unique_look_clean(list(self[i][j] 
-							for i in range(dY, dY + 3) 
-								for j in range(dX, dX + 3)), l_spps)
+				#print(f'\n{j} ==> for rows as rows')
+				unique_look_clean(self[j], length_suppose)
+				#print(f'\n{j} ==> for columns as rows')
+				unique_look_clean(self[:, j], length_suppose)
+				#print(f'\n{j} ==> for quadrant as rows')
+				r = j // 3 * 3
+				c = j % 3 * 3
+				# TEST IT LATER: move FLATTEN into "def unique_look_clean"
+				unique_look_clean(self[r:r+3,c:c+3].flatten(), length_suppose)
 	
 		def unique_make_singular(self):
-			'''
-			looking unique suppose
+			'''	Looking unique suppose in nonsingle cell and make singular it
 			change this unique
-			return
+			input:
+				self - numpy-array by objects
+			return:
 				False if it is not
 				True if it is
 			'''
 			def find_num(s, n):
-				'''
-				count number "n" in array "s"
+				''' Count number "n" in array "s"
 				argument:
-					array [0:9][0:9]
-					number for search
+					s - numpy-array by objects (shape (1,))
+					n - number for search
 				return:
-					number this elements unless len==1
+					<index+1> this elements unless len==1
+					or <0> if n == 0 or n > 1
 				'''
-				return [n in i if len(i) > 1 else 0 for i in s]
+				a = [n in i if len(i) > 1 else 0 for i in [j.suppose for j in s]]
+				return a.index(1) + 1 if sum(a) == 1 else 0
 
 			# for each suppose
 			for supp in range(1,10):
 				# in each row & column & quadrant
 				for j in range(9):
-					# for rows as rows
-					ww = find_num(self[j], supp)
-					if  sum(ww) == 1:
-						print(f'Unique suppose is {supp} find it in row {j + 1} in column {ww.index(1) + 1}!')
-						self[j][ww.index(1)] = [supp]
-						return True
-					# for columns as rows
-					ww = find_num(list(self[i][j] for i in range(9)), supp)
-					if sum(ww) == 1:
-						print(f'Unique suppose is {supp} find it in column {j + 1} in row {ww.index(1) + 1}!')
-						self[ww.index(1)][j] = [supp]
-						return True
-					# for quadrant as rows
-					di = d_quadrant[j][0]
-					dj = d_quadrant[j][1]
-					ww = find_num(list(self[i][j] 
-							for i in range(di, di + 3) 
-								for j in range(dj, dj + 3)), supp)
-					if sum(ww) == 1:
-						print(f'Unique suppose is {supp} find it in quadrant {j + 1} in index {ww.index(1) + 1}!')
-						r, c = divmod(ww.index(1), 3)
-						print(f'This mean  row {r + di*3} column {c + dj*3}')
-						self[r + di*3][c + dj*3] = [supp]
-						return True			
+					r = j // 3 * 3
+					c = j % 3 * 3
+					# string as [row, column, square]
+					strange_strings = [self[j], self[:, j], self[r:r+3,c:c+3].flatten()]
+					# for each type of string
+					for str_str in strange_strings:
+						ind = find_num(str_str, supp)
+						if ind:
+							str_str[ind-1].suppose = [supp]
+							return True
 			return False 
 
-		def line_feat_quadro(self):
-			#для каждого предположения от 1 до 9
-			for spps in range(1, 10):
-				#для каждой строки
+		def line_feat_square(self):
+			# for each suppose
+			for supp in range(1, 10):
+				# in each row
 				for row in range(9):
-					#для каждых ЕЁ трёх клеток
+					# for each third
 					for column in [0, 3, 6]:
-						#строка строки
-						string_row = self[row]
-						#дельты квадрата
-						dY = (row // 3) * 3
-						dX = column
-						#строка квадрата
-						string_quadr = list(self[i][j] 
-								for i in range(dY, dY + 3) 
-									for j in range(dX, dX + 3))	
-						sp_main = []
-						rw_check = []
-						qd_check = []
-						#делим две полученные строки на основу (3яч) и проверки (6яч)
-						for i in range(9):
-							indx = (column + i) % 9
-							if i < 3:
-								#основа: 3 ячейки (совпадают)
-								sp_main += string_row[indx]
-							else:
-								#строка: проверка(6яч)
-								rw_check += string_row[indx]
-								#квадрат: проверка(6)
-								qd_check += string_quadr[i]
-						
-						print(f'supp {spps}; row {row+1} column {column}')
-						print(f'string_row {string_row}')
-						print(f'string_quadr {string_quadr}')
-						print(f'sp_main {sp_main}')
-						print(f'rw_check {rw_check}')
-						print(f'qd_check {qd_check}')
-						input()
-						# ////////////////////////// SERVICE CODE //////////////////////////
-						continue
+						base_line = self[row].tolist()
+						r = row // 3 * 3
+						c = column
+						base_square = self[r:r + 3,c:c + 3].flatten().tolist()
+						# make part for main and part for check
+						main_line = [i.suppose for i in base_line[column:column + 3]]
+						# for LINE
+						check_line = base_line[:3] * bool(column)\
+									 + base_line[3:6] * bool(column - 3)\
+									  + base_line[6:9] * bool(column - 6)
+						# for SQUARE
+						check_square = base_square[:3] * bool(row%3)\
+									 + base_square[3:6] * bool(row%3-1)\
+									  + base_square[6:9] * bool(row%3-2)
+
+						ch_l = [i.suppose for i in check_line]
+						ch_s = [i.suppose for i in check_square]
 						
 						#если предположение есть в основе:
-						if spps in sp_main:
+						if supp in main_line:
 							#то	если оно есть в этой строке НО уникально в этом квадрате:
-							if spps in rw_check and spps not in qd_check:
+							if supp in ch_l and supp not in ch_s:
 								#то удалить из оставшихся 6 ячеек строки это предположение
-								print(f'remove from rw_check: supp {spps}; row {row+1} column {column}')
+								print(f'remove from check_line: supp {supp}; row {row} column {column}')
 								return True
 							#если оно уникально в строке, НО еcть в этом квадрате:
-							elif spps not in rw_check and spps in qd_check:
+							elif supp not in ch_l and supp in ch_s:
 								#то удалить из оставшихся 6 ячеек строки это предположение
-								print(f'remove from qd_check: supp {spps}; row {row+1} column {column}')
+								print(f'remove from check_square: supp {supp}; row {row} column {column}')
 								return True
 			return False
 
 	#=========== work ====================
 	# test [puzzle]
-	# ////////////////////////// SERVICE CODE //////////////////////////
-	# LOOP only for readable. Remove this later
-	for _ in [1]:
-		tst.prnt(puzzle)
-		if not tst.sizes(puzzle):
-			print('Sizes Sudoku-array is wrong!')
-		else:
-			print('Sizes - passed')
-		if not tst.values(puzzle):
-			print('Values of Sudoku-array is in incorrect range!')
-		else:
-			print('Values range - passed')
-		if not tst.given(puzzle):
-			print('Very little data in Sudoku-array. The solution is impossible!')
-		else:
-			print('Given - passed')
-	
-	# run-up something
-	# ////////////////////////// SERVICE CODE //////////////////////////
-	# LOOP only for readable. Remove this later
-	for _ in [1]:
-		# minor/working array of supposes
-		supposes = w_arr.create(puzzle)
-		# d_quadrant == dictionary, where:
-		#	key == number of quadrant in Sudoku;
-		#	value == [shift for row, shift for column]
-		#		0 1 2
-		#		3 4 5
-		#		6 7 8
-		d_quadrant = {
-			0: [0, 0], 1: [0, 3], 2: [0, 6],
-			3: [3, 0], 4: [3, 3], 5: [3, 6],
-			6: [6, 0], 7: [6, 3], 8: [6, 6]
-			}
-	
-	# if number of answers less 81 then look next more solve 
-	tmp_count = 0
-	while w_arr.count_ans(supposes) < 81:
-		
-		# ////////////////////////// SERVICE CODE //////////////////////////
-		tmp_count +=1
-		print(f'\n\n\nnumber of answers is {w_arr.count_ans(supposes)} for now\n')
-		print(f'the main loop will be launched for the {tmp_count} time\n')
-		w_arr.print_wide(supposes)
+	tst()
+
+	# create numpy-array of suppose (default suposes)
+	w_arr = np.array([cell(i) for i in range(81)])
+	w_arr.resize(9,9)
+
+	# put sudoku-array in w_arr
+	for row in range(w_arr.shape[0]):
+		for column in range(w_arr.shape[1]):
+			if puzzle[row][column]:
+				w_arr[row, column].suppose = [puzzle[row][column]]
+
+	print(f'\nnumber of answer == {looking.sum_ans(w_arr)}\n\n')
+
+	while looking.sum_ans(w_arr) < 81:
+		looking.p_arr_w(w_arr)
 		input()
-		# //////
+		print(f'\n\n=========== next loop ====================')
+		print('\n')
+		
+		# check the correcting operate (no doubles, no ? ... only doubles???)
 
 		# MODUS 1
-		# look unique sets (of 1, 2 ,3, 4 elements) and clean extra supposes like it
-		for n in [1, 2, 3, 4]:
-			f_ans = 0
-			while f_ans != w_arr.count_ans(supposes):
-				f_ans = w_arr.count_ans(supposes)
-				w_arr.clean_extra_suppose(supposes, n)
+		# Look unique sets (of 1, 2, 3 elements) and clean extra supposes
+		sum_ans = 0
+		while sum_ans < looking.sum_ans(w_arr):
+			sum_ans = looking.sum_ans(w_arr)
+			for n in [1, 2, 3]:
+				looking.del_extra(w_arr, n)
+				print(f'\nlooking.del_extra - completed')
+				print(f'number of answer == {looking.sum_ans(w_arr)}')
+				looking.p_arr_w(w_arr)
+		print(f'\nlooking.looking.del_extra - passed')
+		print(f'number of answer == {looking.sum_ans(w_arr)}')
 
-		# MODUS 2.
+		# MODUS 2
 		# look unique suppose in nonsingle cell and make singular it
-		if w_arr.unique_make_singular(supposes):
+		if looking.unique_make_singular(w_arr):
+			print('\nlooking.unique_make_singular - completed')
+			print(f'number of answer == {looking.sum_ans(w_arr)}')
 			continue
-		print(supposes)
-		# MODUS 3
+		
+		print(f'\nlooking.unique_make_singular - passed')
+		print(f'number of answer == {looking.sum_ans(w_arr)}')
+		looking.p_arr_w(w_arr)
+		
+		# MODUS 3 - NOT FINISHED
 		# look unique suppose in string and clean it from quadrant. And vice versa.
-		if w_arr.line_feat_quadro(supposes):
+		if looking.line_feat_square(w_arr):
+			print('\nlooking.line_feat_square - completed')
+			print(f'number of answer == {looking.sum_ans(w_arr)}')
 			continue
+		
+		print(f'\nlooking.line_feat_square - passed')
+		print(f'number of answer == {looking.sum_ans(w_arr)}')
+
+		#continue
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 1:
+				ans[cl.suppose[0]] += 1
+		print(f'answers for now {ans}')
+
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 2:
+				ans[cl.suppose[0]] += 1
+				ans[cl.suppose[1]] += 1
+		print(f'answers in double {ans}')
+
+		ans = {i:0 for i in range(1, 10)}
+		for cl in w_arr.flatten():
+			if len(cl.suppose) == 2 and 8 in cl.suppose:
+				print(f'index {cl.ind}')
+		print(f'answers in double {ans}')
+
+
+		print('NOW I WILL CHANGE THE CELL [0, 1]')
+		w_arr[1, 0].suppose = [7]
+		input()
+
+
+
+
+
+
+
+
+
+
+	#=========== END of DEF ====================
 
 ask = [[
-		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
-		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
-		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
-		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
-		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
-		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
-		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
-		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
-		[1, 0, 0, 0, 0, 2, 5, 0, 0]
+		[0, 0, 0, 0, 0, 0, 4, 1, 0], 
+		[0, 2, 0, 1, 0, 0, 0, 0, 0], 
+		[8, 5, 0, 0, 0, 0, 0, 0, 6], 
+		[5, 0, 2, 0, 3, 0, 0, 0, 0], 
+		[7, 0, 0, 0, 8, 0, 5, 9, 0], 
+		[0, 6, 0, 0, 5, 0, 0, 0, 4], 
+		[0, 0, 0, 0, 0, 9, 0, 8, 0], 
+		[0, 1, 0, 0, 0, 2, 0, 0, 9], 
+		[0, 0, 3, 0, 0, 0, 7, 0, 0] 
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
@@ -291,7 +348,7 @@ sudoku_solver(ask[0])
 
 
 ''' MORE SUDOKU GRID
-
+minor not hard
 		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
 		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
 		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
@@ -301,7 +358,7 @@ sudoku_solver(ask[0])
 		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
 		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
 		[0, 0, 0, 0, 0, 0, 0, 0, 8]
-
+general
 		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
 		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
 		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
@@ -311,20 +368,16 @@ sudoku_solver(ask[0])
 		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
 		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
 		[1, 0, 0, 0, 0, 2, 5, 0, 0]
-
-
-00 01 02   03 04 05   06 07 08
-09 10 11   12 13 14   15 16 17
-18 19 20   21 22 23   24 25 26
-
-27 28 29   30 31 32   33 34 35
-36 37 38   39 40 41   42 43 44
-45 46 47   48 49 50   51 52 53
-
-54 55 56   57 58 59   60 61 62
-63 64 65   66 67 68   69 70 71
-72 73 74   75 76 77   78 79 80
-
-
+minor hard
+		[0, 0, 0, 0, 0, 8, 0, 6, 0], 
+		[8, 0, 0, 9, 3, 0, 0, 0, 0], 
+		[0, 9, 3, 0, 0, 0, 0, 0, 0], 
+		[0, 0, 0, 0, 0, 0, 6, 0, 0], 
+		[0, 3, 0, 4, 0, 7, 8, 0, 0], 
+		[5, 0, 0, 0, 0, 0, 0, 4, 0], 
+		[0, 0, 1, 0, 9, 0, 7, 0, 0], 
+		[7, 2, 0, 0, 6, 0, 3, 0, 0], 
+		[0, 0, 0, 0, 2, 4, 0, 0, 1]
+minor hard
 
 '''
