@@ -30,21 +30,22 @@ def sudoku_solver(puzzle):
 			# must to be 17 or more
 			return True
 		'''
-		prt(puzzle)
-		if not sizes(puzzle):
-			print('Sizes Sudoku-array is wrong!')
-		else:
-			print('Sizes -\t\tpassed')
-		if not values(puzzle):
-			print('Values of Sudoku-array is in incorrect range!')
-		else:
-			print('Values range -\tpassed')
-		if not given(puzzle):
-			print('Very little data in Sudoku-array. The solution is impossible!')
-		else:
-			print('Given -\t\tpassed')
+			prt(puzzle)
+			if not sizes(puzzle):
+				print('Sizes Sudoku-array is wrong!')
+			else:
+				print('Sizes -\t\tpassed')
+			if not values(puzzle):
+				print('Values of Sudoku-array is in incorrect range!')
+			else:
+				print('Values range -\tpassed')
+			if not given(puzzle):
+				print('Very little data in Sudoku-array. The solution is impossible!')
+			else:
+				print('Given -\t\tpassed')
 
 		'''
+
 	class cell(object):
 		'''
 		create cell-object
@@ -61,48 +62,118 @@ def sudoku_solver(puzzle):
 		def suppose(self,suppose):
 			self.suppose = suppose
 
-	class w_arr(object):
-			def __init__(self, deep):
-				# set w_arr position in the stack
-				self.deep = deep
+	class field(object):
+			def __init__(self):
 				# create numpy-array of suppose (default suposes)
 				self.state = np.array([cell(i) for i in range(81)])
 				self.state.resize(9, 9)
 
 			def fill(self, array):
-				# put sudoku-array in w_arr
-				for row in range(self.shape[0]):
-					for column in range(self.shape[1]):
+				# put sudoku-array in the field
+				for row in range(9):
+					for column in range(9):
 						if array[row][column]:
-							print(f'self[row, column] {self[row, column]}')
-							self[row, column].suppose = [array[row][column]]
+							self.state[row, column].suppose = [array[row][column]]
 				return self
 
-	def p_arr_w(self):
-		''' Print array row by row and counter it.
-		input:
-			self - numpy-array by objects
-		return:
-			None
-		'''
-		for j, row in enumerate(self.state):
-			print(f'\nrow {j}')
-			for i, column in enumerate(row):
-				print(self.state[j, i][0], end=' ')
-				if i in [2, 5]:
-					print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
+			def num_ans(self):
+				return 0
+			
+			def check_ans(self):
+				return True
+
+			def row(self, index):
+				return []
+
+			def column(self, index):
+				return []
+
+			def square(self, index):
+				return []
+
+	class tmp():
+		def print(self):
+			''' Print array row by row and counter it.
+			input:
+				self - numpy-array by objects
+			return:
+				None
+			'''
+			for j, row in enumerate(self.state):
+				print(f'\nrow {j}')
+				for i, column in enumerate(row):
+					print(self.state[j, i].suppose, end=' ')
+					if i in [2, 5]:
+						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
+				print()
 			print()
-		print()
+
+	def get_ans(array):
+		def del_extra(self):
+			return False
+		def unique_make_singular(self):
+			return False
+		def line_feat_square(self):
+			return False
+		def three_in_three(self):
+			return False
+		
+		while array.num_ans() < 81:
+			
+			if not del_extra:
+				print('del_extra completed')
+				continue
+			print('del_extra passed')
+			
+			if not unique_make_singular:
+				print('unique_make_singular completed')
+				continue
+			print('unique_make_singular passed')
+			
+			if not line_feat_square:
+				print('line_feat_square completed')
+				continue
+			print('line_feat_square passed')
+
+			if not three_in_three:
+				print('three_in_three completed')
+				continue
+			print('three_in_three passed')
+			
+			return True
+		return None
 
 	#=========== work ====================
 	# test [puzzle]
 	#tst()
 
-	z = w_arr(0)
-	z.state.fill(puzzle)
-	p_arr_w(z)
+	# create w_arr and fill it
+	w_arr = field()
+	w_arr.fill(puzzle)
+
+	# init stack
+	mem_state = [w_arr]
 	
-	#print(f'z[1].index {list(i.index for i in z.state[:,1])}')
+	while True:
+		input(f'This is start of the loop')
+		print(f'w_arr.num_ans() {w_arr.num_ans()}')
+
+		z = get_ans(mem_state[-1])
+
+		if z == None:			
+			print('Sudoku is solved.')
+			return 'Sudoku is solved!'
+		elif z:
+			print('No solution. Making some choice.')
+			print('Looking len(cell.suppose) == 2')
+			print('mem_state.append(w_arr_1)')
+			print('mem_state.append(w_arr_2)')
+			continue
+		else:
+			print('Wrong choice. Making rechoice.')
+			print('del mem_state[-1]')
+			continue
+
 
 
 ask = [[
