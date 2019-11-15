@@ -81,14 +81,10 @@ def sudoku_solver(puzzle):
 				return self
 
 			def num_ans(self):
-				s = [[0 if len(column.suppose) > 1 
-						else column.suppose[0]
-							for column in row]
-								for row in self.state]
-				return sum(bool(s[row][column]) 
-								for column in range(len(s))
-									for row in range(len(s)))
-			
+				return sum(0 if len(column.suppose) > 1 else 1
+									for row in self.state 
+										for column in row)
+				
 			def check_ans(self):
 				return True
 
