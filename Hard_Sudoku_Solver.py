@@ -81,21 +81,66 @@ def sudoku_solver(puzzle):
 				return self
 
 			def num_ans(self):
+				'''
+				input:
+					self - array by objects;
+				return:
+					sum [len(cell) == 1]
+				'''
 				return sum(0 if len(column.suppose) > 1 else 1
 									for row in self.state 
 										for column in row)
 				
 			def check_ans(self):
+				'''
+				input:
+					self - array by objects;
+				return:
+					True - if ALL cells is correct
+					False - if at least one cell is NOT correct
+				'''
+				def look_wrong_line(w_str):
+					'''	Look & count sets (of 1, 2, 3 elements)
+						input:
+							self - array by objects;			
+						return:
+							True - if make change in self
+							False - if it is not
+							None - if finded mistake in self (only after True)
+					'''
+					s = [i.suppose for i in w_str]
+					for i in s:
+						if s.count(i) > len(i):
+							return False
+					return True
+
+				for j in range(9):
+					if not look_wrong_line(self.state[j]):
+						return False
+					if not look_wrong_line(self.column(j)):
+						return False
+					if not look_wrong_line(self.square(j)):
+						return False
+						
 				return True
 
 			def row(self, index):
 				return []
 
 			def column(self, index):
-				return []
+				return [self.state[row][index] for row in range(9)]
 
 			def square(self, index):
-				return []
+				r = index % 3 * 3
+				c = index // 3 * 3
+				return [self.state[row][col] for row in range(c, c + 3) 
+												for col in range(r, r + 3)]
+
+			def look_double(self):
+				for r in self.state:
+					for c in r:
+						if len(c.suppose) == 2:
+							return c
 
 	class tmp():
 		def print(self):
@@ -116,21 +161,61 @@ def sudoku_solver(puzzle):
 
 	def get_ans(array):
 		def del_extra(self):
-			return False
+			rtrn = False
+			'''	Look unique sets (of 1, 2, 3 elements) and clean extra
+			supposes like it (in each row & column & square)
+			input:
+				self - array by objects;		
+			return:
+				True - if make change in self
+				False - if it is not
+				None - if finded mistake in self (only after True)
+			'''
+			def unique_look_clean(w_str):
+				''' Look unique elements from suppose in string (array). Then remove like it from array of supposes.
+				argument:
+					w_str - string-array by objects
+				return:
+					None
+				'''
+				make_change = False
+				s = [i.suppose for i in w_str]
+				# length of suppose
+				for l_s in [1, 2, 3, 4, 5]:
+					# index from 0 to 8
+					for posX in range(9):
+						if len(s[posX]) == l_s and s.count(s[posX]) == l_s:
+							for posY in range(9):
+								for ind in range(l_s):
+									if s[posY] != s[posX] and s[posX][ind] in s[posY]:
+										w_str[posY].suppose.remove(s[posX][ind])
+										make_change = True
+				return make_change
+
+			for j in range(9):
+				rtrn = rtrn or unique_look_clean(self.state[j]) \
+							or unique_look_clean(self.column(j)) \
+							or unique_look_clean(self.square(j))
+				if not self.check_ans():
+					return None
+			return rtrn
+
 		def unique_make_singular(self):
-			return False
+			return True
 		def line_feat_square(self):
-			return False
+			return True
 		def three_in_three(self):
-			return False
+			return True
 
 		while array.num_ans() < 81:
 
-			print(f'field.num_ans(array) {field.num_ans(array)}')
-			
-			if not del_extra:
-				print('del_extra completed')
+			#print(f'field.num_ans(array) {field.num_ans(array)}')
+			f = del_extra(array) 
+			if f:
+				#print('del_extra completed')
 				continue
+			elif f == None:
+				return False
 			print('del_extra passed')
 			
 			if not unique_make_singular:
@@ -167,7 +252,7 @@ def sudoku_solver(puzzle):
 		w_arr = mem_state[-1]
 		print(f'w_arr.num_ans() {w_arr.num_ans()}')
 
-		#tmp.print(w_arr.state)
+		tmp.print(w_arr.state)
 		z = get_ans(w_arr)
 
 		if z == None:			
@@ -176,26 +261,32 @@ def sudoku_solver(puzzle):
 		elif z:
 			print('No solution. Making some choice.')
 			print('Looking len(cell.suppose) == 2')
+			spp = w_arr.look_double()
+			tmp_list = spp.suppose
+			spp.suppose = [tmp_list[0]]
+			mem_state.append(w_arr)
+			spp.suppose = [tmp_list[1]]
 			print('mem_state.append(w_arr_1)')
 			print('mem_state.append(w_arr_2)')
 			continue
 		else:
 			print('Wrong choice. Making rechoice.')
 			print('del mem_state[-1]')
+			w_arr = mem_state.pop(-1)
 			continue
 
 
 
 ask = [[
-		[0, 0, 0, 0, 0, 0, 4, 1, 0], 
-		[0, 2, 0, 1, 0, 0, 0, 0, 0], 
-		[8, 5, 0, 0, 0, 0, 0, 0, 6], 
-		[5, 0, 2, 0, 3, 0, 0, 0, 0], 
-		[7, 0, 0, 0, 8, 0, 5, 9, 0], 
-		[0, 6, 0, 0, 5, 0, 0, 0, 4], 
-		[0, 0, 0, 0, 0, 9, 0, 8, 0], 
-		[0, 1, 0, 0, 0, 2, 0, 0, 9], 
-		[0, 0, 3, 0, 0, 0, 7, 0, 0] 
+		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
+		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
+		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
+		[5, 0, 8, 4, 0, 0, 0, 1, 0], 
+		[0, 4, 2, 9, 0, 0, 0, 0, 0], 
+		[1, 0, 0, 0, 0, 0, 0, 5, 0], 
+		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
+		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
+		[0, 0, 0, 0, 0, 0, 0, 0, 8]
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
@@ -245,5 +336,26 @@ minor hard
 		[7, 2, 0, 0, 6, 0, 3, 0, 0], 
 		[0, 0, 0, 0, 2, 4, 0, 0, 1]
 minor hard
+		[0, 0, 0, 0, 0, 0, 4, 1, 0], 
+		[0, 2, 0, 1, 0, 0, 0, 0, 0], 
+		[8, 5, 0, 0, 0, 0, 0, 0, 6], 
+		[5, 0, 2, 0, 3, 0, 0, 0, 0], 
+		[7, 0, 0, 0, 8, 0, 5, 9, 0], 
+		[0, 6, 0, 0, 5, 0, 0, 0, 4], 
+		[0, 0, 0, 0, 0, 9, 0, 8, 0], 
+		[0, 1, 0, 0, 0, 2, 0, 0, 9], 
+		[0, 0, 3, 0, 0, 0, 7, 0, 0] 
+
+00 01 02  03 04 05  06 07 08  
+09 10 11  12 13 14  15 16 17  
+18 19 20  21 22 23  24 25 26  
+
+27 28 29  30 31 32  33 34 35  
+36 37 38  39 40 41  42 43 44  
+45 46 47  48 49 50  51 52 53  
+
+54 55 56  57 58 59  60 61 62  
+63 64 65  66 67 68  69 70 71  
+72 73 74  75 76 77  78 79 80
 
 '''
