@@ -65,19 +65,29 @@ def sudoku_solver(puzzle):
 	class field(object):
 			def __init__(self):
 				# create numpy-array of suppose (default suposes)
+				'''
 				self.state = np.array([cell(i) for i in range(81)])
 				self.state.resize(9, 9)
-
+				'''
+				self.state = [[cell(i*9 + j) for j in range(9)]
+											 for i in range(9)]
+				
 			def fill(self, array):
 				# put sudoku-array in the field
 				for row in range(9):
 					for column in range(9):
 						if array[row][column]:
-							self.state[row, column].suppose = [array[row][column]]
+							self.state[row][column].suppose = [array[row][column]]
 				return self
 
 			def num_ans(self):
-				return 0
+				s = [[0 if len(column.suppose) > 1 
+						else column.suppose[0]
+							for column in row]
+								for row in self.state]
+				return sum(bool(s[row][column]) 
+								for column in range(len(s))
+									for row in range(len(s)))
 			
 			def check_ans(self):
 				return True
@@ -99,10 +109,10 @@ def sudoku_solver(puzzle):
 			return:
 				None
 			'''
-			for j, row in enumerate(self.state):
+			for j, row in enumerate(self):
 				print(f'\nrow {j}')
 				for i, column in enumerate(row):
-					print(self.state[j, i].suppose, end=' ')
+					print(self[j][i].suppose, end=' ')
 					if i in [2, 5]:
 						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
 				print()
@@ -117,8 +127,10 @@ def sudoku_solver(puzzle):
 			return False
 		def three_in_three(self):
 			return False
-		
+
 		while array.num_ans() < 81:
+
+			print(f'field.num_ans(array) {field.num_ans(array)}')
 			
 			if not del_extra:
 				print('del_extra completed')
@@ -155,10 +167,12 @@ def sudoku_solver(puzzle):
 	mem_state = [w_arr]
 	
 	while True:
-		input(f'This is start of the loop')
+		input(f'==========>\nThis is start of the loop')
+		w_arr = mem_state[-1]
 		print(f'w_arr.num_ans() {w_arr.num_ans()}')
 
-		z = get_ans(mem_state[-1])
+		#tmp.print(w_arr.state)
+		z = get_ans(w_arr)
 
 		if z == None:			
 			print('Sudoku is solved.')
