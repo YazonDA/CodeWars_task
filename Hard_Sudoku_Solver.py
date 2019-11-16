@@ -159,6 +159,12 @@ def sudoku_solver(puzzle):
 				print()
 			print()
 
+		def short_p(self):
+			tst.prt([[0 if len(column.suppose) > 1 
+						else column.suppose[0] 
+										for column in row]
+											for row in self.state])
+
 	def get_ans(array):
 		def del_extra(self):
 			rtrn = False
@@ -199,14 +205,14 @@ def sudoku_solver(puzzle):
 				if not self.check_ans():
 					return None
 			return rtrn
-
+		'''
 		def unique_make_singular(self):
 			return True
 		def line_feat_square(self):
 			return True
 		def three_in_three(self):
 			return True
-
+		'''
 		while array.num_ans() < 81:
 
 			#print(f'field.num_ans(array) {field.num_ans(array)}')
@@ -216,8 +222,8 @@ def sudoku_solver(puzzle):
 				continue
 			elif f == None:
 				return False
-			print('del_extra passed')
-			
+			#print('del_extra passed')
+			'''
 			if not unique_make_singular:
 				print('unique_make_singular completed')
 				continue
@@ -232,7 +238,7 @@ def sudoku_solver(puzzle):
 				print('three_in_three completed')
 				continue
 			print('three_in_three passed')
-			
+			'''
 			return True
 		return None
 
@@ -251,42 +257,53 @@ def sudoku_solver(puzzle):
 		input(f'==========>\nThis is start of the loop')
 		w_arr = mem_state[-1]
 		print(f'w_arr.num_ans() {w_arr.num_ans()}')
-
-		tmp.print(w_arr.state)
+		print(f'len(mem_state) {len(mem_state)}')
+		tmp.short_p(w_arr)
+			
 		z = get_ans(w_arr)
 
 		if z == None:			
 			print('Sudoku is solved.')
+			tmp.short_p(w_arr)
 			return 'Sudoku is solved!'
 		elif z:
 			print('No solution. Making some choice.')
 			print('Looking len(cell.suppose) == 2')
 			spp = w_arr.look_double()
+			tmp.short_p(w_arr)
+			input('It was befor append')
 			tmp_list = spp.suppose
 			spp.suppose = [tmp_list[0]]
 			mem_state.append(w_arr)
+			tmp.short_p(w_arr)
+			input('It was after append')
 			spp.suppose = [tmp_list[1]]
-			print('mem_state.append(w_arr_1)')
-			print('mem_state.append(w_arr_2)')
+			tmp.short_p(w_arr)
+			input('It was after second option')
+			print('mem_state.append')
 			continue
 		else:
 			print('Wrong choice. Making rechoice.')
-			print('del mem_state[-1]')
+			print('mem_state.pop')
+			tmp.short_p(w_arr)
+			input('It was befor remem')
 			w_arr = mem_state.pop(-1)
+			tmp.short_p(w_arr)
+			input('It was after remem')
 			continue
 
 
 
 ask = [[
-		[6, 8, 0, 0, 3, 0, 0, 0, 4], 
-		[0, 3, 4, 0, 0, 0, 2, 0, 0], 
-		[0, 0, 0, 7, 0, 0, 0, 0, 5], 
-		[5, 0, 8, 4, 0, 0, 0, 1, 0], 
-		[0, 4, 2, 9, 0, 0, 0, 0, 0], 
-		[1, 0, 0, 0, 0, 0, 0, 5, 0], 
-		[0, 2, 0, 8, 0, 1, 0, 4, 0], 
-		[0, 0, 0, 0, 0, 9, 6, 0, 0], 
-		[0, 0, 0, 0, 0, 0, 0, 0, 8]
+		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
+		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
+		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
+		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
+		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
+		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
+		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
+		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
+		[1, 0, 0, 0, 0, 2, 5, 0, 0]
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
