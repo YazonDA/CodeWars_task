@@ -1,3 +1,10 @@
+# GENERAL TASKs
+# SPEEDUP --> add more one method in get_ans
+# TODO --> 
+#		> del tmp & tst.prt
+#		> to make tst.given
+#		> to remake tst.values (without numpy)
+
 '''CodeWars task - Hard Sudoku Solver
 Tag`s - PUZZLES GAMES ALGORITHMS VALIDATION
 2 kyu
@@ -9,9 +16,41 @@ Or it should raise an error in cases of:
 invalid grid (not 9x9, cell with values not
 in the range 1~9); multiple solutions for the
 same puzzle or the puzzle is unsolvable.'''
-import numpy as np
+
 
 def sudoku_solver(puzzle):
+	class tmp():
+		def print(self):
+			''' Print array row by row and counter it.
+			input:
+				self - numpy-array by objects
+			return:
+				None
+			'''
+			for j, row in enumerate(self):
+				print(f'\nrow {j}')
+				for i, column in enumerate(row):
+					print(self[j][i].suppose, end=' ')
+					if i in [2, 5]:
+						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
+				print()
+			print()
+
+		def short_p(self):
+			tst.prt([[0 if len(column.suppose) > 1 
+						else column.suppose[0] 
+										for column in row]
+											for row in self.state])
+
+		def info(self):
+			print(f'==========>\nThis is start of the loop')
+			#w_arr = mem_state[-1]
+			print(f'w_arr.num_ans() {self.num_ans()}')
+			print(f'len(mem_state) {len(mem_state)}')
+			tmp.short_p(self)
+
+	import numpy as np
+	import copy
 
 	class tst(object):
 		def prt(self):
@@ -29,22 +68,23 @@ def sudoku_solver(puzzle):
 		def given(self):
 			# must to be 17 or more
 			return True
-		'''
-			prt(puzzle)
-			if not sizes(puzzle):
-				print('Sizes Sudoku-array is wrong!')
-			else:
-				print('Sizes -\t\tpassed')
-			if not values(puzzle):
-				print('Values of Sudoku-array is in incorrect range!')
-			else:
-				print('Values range -\tpassed')
-			if not given(puzzle):
-				print('Very little data in Sudoku-array. The solution is impossible!')
-			else:
-				print('Given -\t\tpassed')
-
-		'''
+		
+		#prt(puzzle)
+		if not sizes(puzzle):
+			print('Sizes Sudoku-array is wrong!')
+		else:
+			pass
+			#print('Sizes -\t\tpassed')
+		if not values(puzzle):
+			print('Values of Sudoku-array is in incorrect range!')
+		else:
+			pass
+			#print('Values range -\tpassed')
+		if not given(puzzle):
+			print('Very little data in Sudoku-array. The solution is impossible!')
+		else:
+			pass
+			#print('Given -\t\tpassed')		
 
 	class cell(object):
 		'''
@@ -142,29 +182,6 @@ def sudoku_solver(puzzle):
 						if len(c.suppose) == 2:
 							return c
 
-	class tmp():
-		def print(self):
-			''' Print array row by row and counter it.
-			input:
-				self - numpy-array by objects
-			return:
-				None
-			'''
-			for j, row in enumerate(self):
-				print(f'\nrow {j}')
-				for i, column in enumerate(row):
-					print(self[j][i].suppose, end=' ')
-					if i in [2, 5]:
-						print('\n', '\t\t\t' * ((i+1) // 3), end=' ')
-				print()
-			print()
-
-		def short_p(self):
-			tst.prt([[0 if len(column.suppose) > 1 
-						else column.suppose[0] 
-										for column in row]
-											for row in self.state])
-
 	def get_ans(array):
 		def del_extra(self):
 			rtrn = False
@@ -205,93 +222,43 @@ def sudoku_solver(puzzle):
 				if not self.check_ans():
 					return None
 			return rtrn
-		'''
-		def unique_make_singular(self):
-			return True
-		def line_feat_square(self):
-			return True
-		def three_in_three(self):
-			return True
-		'''
+
 		while array.num_ans() < 81:
-
-			#print(f'field.num_ans(array) {field.num_ans(array)}')
 			f = del_extra(array) 
-			if f:
-				#print('del_extra completed')
-				continue
-			elif f == None:
-				return False
-			#print('del_extra passed')
-			'''
-			if not unique_make_singular:
-				print('unique_make_singular completed')
-				continue
-			print('unique_make_singular passed')
-			
-			if not line_feat_square:
-				print('line_feat_square completed')
-				continue
-			print('line_feat_square passed')
-
-			if not three_in_three:
-				print('three_in_three completed')
-				continue
-			print('three_in_three passed')
-			'''
+			if f: continue
+			elif f == None: return False
 			return True
 		return None
 
 	#=========== work ====================
 	# test [puzzle]
-	#tst()
-
+	tst()
+	
 	# create w_arr and fill it
 	w_arr = field()
 	w_arr.fill(puzzle)
 
 	# init stack
-	mem_state = [w_arr]
+	mem_state = []
 	
 	while True:
-		input(f'==========>\nThis is start of the loop')
-		w_arr = mem_state[-1]
-		print(f'w_arr.num_ans() {w_arr.num_ans()}')
-		print(f'len(mem_state) {len(mem_state)}')
-		tmp.short_p(w_arr)
+		#tmp.info(w_arr)
 			
 		z = get_ans(w_arr)
-
 		if z == None:			
-			print('Sudoku is solved.')
-			tmp.short_p(w_arr)
+			#print('Sudoku is solved.')
+			#tmp.short_p(w_arr)
 			return 'Sudoku is solved!'
+			#return [[column.suppose[0] for column in row] for row in w_arr.state]
 		elif z:
-			print('No solution. Making some choice.')
-			print('Looking len(cell.suppose) == 2')
 			spp = w_arr.look_double()
-			tmp.short_p(w_arr)
-			input('It was befor append')
 			tmp_list = spp.suppose
 			spp.suppose = [tmp_list[0]]
-			mem_state.append(w_arr)
-			tmp.short_p(w_arr)
-			input('It was after append')
+			mem_state.append(copy.deepcopy(w_arr))
 			spp.suppose = [tmp_list[1]]
-			tmp.short_p(w_arr)
-			input('It was after second option')
-			print('mem_state.append')
 			continue
-		else:
-			print('Wrong choice. Making rechoice.')
-			print('mem_state.pop')
-			tmp.short_p(w_arr)
-			input('It was befor remem')
-			w_arr = mem_state.pop(-1)
-			tmp.short_p(w_arr)
-			input('It was after remem')
-			continue
-
+		
+		w_arr = mem_state.pop(-1)
 
 
 ask = [[
@@ -316,9 +283,8 @@ ask = [[
 		[1, 7, 3, 8, 6, 2, 5, 9, 4]]]
 
 
-
-
-sudoku_solver(ask[0])
+answer = sudoku_solver(ask[0])
+print(answer)
 
 
 ''' MORE SUDOKU GRID
