@@ -1,22 +1,23 @@
 # GENERAL TASKs
-# SPEEDUP --> add more one method in get_ans
 # TODO --> 
 #		> del tmp & tst.prt
-#		> Unexpected exception raised
-#		  TypeError: exceptions must derive from BaseException
-#		> Invalid grid should raise an error.
-# Log
-#Input:
-#[0, 0, 2, 0, 0, 7, 0, 0, 0]
-#[8, 0, 0, 0, 0, 0, 0, 3, 0]
-#[0, 0, 0, 0, 0, 0, 0, 9, 4]
-#[0, 8, 0, 0, 0, 0, 0, 0, 5]
-#[0, 0, 0, 0, 0, 0, 0, 0, 7]
-#[9, 0, 0, 0, 3, 0, 0, 0, 0]
-#[0, 0, 0, 0, 0, 0, 0, 0, 0]
-#[0, 0, 0, 0, 9, 0, 8, 1, 0]
-#[0, 5, 7, 2, 0, 0, 0, 0, 0]
-#--------------------------
+#		> Time: 8650ms Passed: 10 Failed: 0 Exit Code: 1
+#Traceback (most recent call last):
+#  File "main.py", line 3, in <module>
+#    @Test.describe("Fixed tests")
+#  File "/runner/frameworks/python/cw-2.py", line 111, in wrapper
+#    func()
+#  File "main.py", line 7, in fixed
+#    @Test.it("Single solutions")
+#  File "/runner/frameworks/python/cw-2.py", line 111, in wrapper
+#    func()
+#  File "main.py", line 235, in fff
+#    Test.assert_equals(sudoku_solver(p), s, "Incorrect solution!")
+#  File "/home/codewarrior/solution.py", line 8, in sudoku_solver
+#    class tst(object):
+#  File "/home/codewarrior/solution.py", line 31, in tst
+#    raise SudokuTaskIsWrong('Incorrect solution!')
+#solution.SudokuTaskIsWrong: Incorrect solution!
 
 '''CodeWars task - Hard Sudoku Solver
 Tag`s - PUZZLES GAMES ALGORITHMS VALIDATION
@@ -35,6 +36,7 @@ same puzzle or the puzzle is unsolvable.'''
 
 #@pysnooper.snoop()
 def sudoku_solver(puzzle):
+
 	class tmp():
 		def print(self):
 			''' Print array row by row and counter it.
@@ -66,6 +68,9 @@ def sudoku_solver(puzzle):
 			tmp.short_p(self)
 
 	import copy
+	class SudokuTaskIsWrong(BaseException):
+		pass
+
 
 	class tst(object):
 		def prt(self):
@@ -86,11 +91,11 @@ def sudoku_solver(puzzle):
 			return sum(row.count(0) for row in self) < 64
 		
 		if not sizes(puzzle):
-			raise('Sizes Sudoku-array is wrong!')
+			raise SudokuTaskIsWrong('Sizes Sudoku-array is wrong!')
 		elif not values(puzzle):
-			raise('Values of Sudoku-array is in incorrect range!')
+			raise SudokuTaskIsWrong('Values of Sudoku-array is in incorrect range!')
 		elif not given(puzzle):
-			raise('Very little data in Sudoku-array. The solution is impossible!')
+			raise SudokuTaskIsWrong('Very little data in Sudoku-array. The solution is impossible!')
 		
 	class cell(object):
 		'''
@@ -278,7 +283,7 @@ def sudoku_solver(puzzle):
 	# create w_arr and fill it
 	w_arr = field()
 	if not w_arr.check_ans():
-		raise('Given values is wrong!')
+		raise SudokuTaskIsWrong('Given values is wrong!')
 
 	# init stack
 	mem_state = []
@@ -305,7 +310,7 @@ def sudoku_solver(puzzle):
 
 
 ask = [[
-		[4, 7, 0, 3, 0, 2, 0, 6, 0],
+		[4, 7, 0, 3, 0, 2, 0, 0],
 		[0, 0, 9, 0, 0, 0, 2, 0, 0],
 		[0, 8, 0, 0, 0, 0, 7, 0, 0],
 		[0, 5, 0, 0, 1, 9, 0, 0, 0],
