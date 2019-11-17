@@ -2,8 +2,21 @@
 # SPEEDUP --> add more one method in get_ans
 # TODO --> 
 #		> del tmp & tst.prt
-#		> to make tst.given
-#		> to remake tst.values (without numpy)
+#		> Unexpected exception raised
+#		  TypeError: exceptions must derive from BaseException
+#		> Invalid grid should raise an error.
+# Log
+#Input:
+#[0, 0, 2, 0, 0, 7, 0, 0, 0]
+#[8, 0, 0, 0, 0, 0, 0, 3, 0]
+#[0, 0, 0, 0, 0, 0, 0, 9, 4]
+#[0, 8, 0, 0, 0, 0, 0, 0, 5]
+#[0, 0, 0, 0, 0, 0, 0, 0, 7]
+#[9, 0, 0, 0, 3, 0, 0, 0, 0]
+#[0, 0, 0, 0, 0, 0, 0, 0, 0]
+#[0, 0, 0, 0, 9, 0, 8, 1, 0]
+#[0, 5, 7, 2, 0, 0, 0, 0, 0]
+#--------------------------
 
 '''CodeWars task - Hard Sudoku Solver
 Tag`s - PUZZLES GAMES ALGORITHMS VALIDATION
@@ -17,13 +30,16 @@ invalid grid (not 9x9, cell with values not
 in the range 1~9); multiple solutions for the
 same puzzle or the puzzle is unsolvable.'''
 
+#import pysnooper
 
+
+#@pysnooper.snoop()
 def sudoku_solver(puzzle):
 	class tmp():
 		def print(self):
 			''' Print array row by row and counter it.
 			input:
-				self - numpy-array by objects
+				self - array by objects
 			return:
 				None
 			'''
@@ -49,7 +65,6 @@ def sudoku_solver(puzzle):
 			print(f'len(mem_state) {len(mem_state)}')
 			tmp.short_p(self)
 
-	import numpy as np
 	import copy
 
 	class tst(object):
@@ -63,29 +78,20 @@ def sudoku_solver(puzzle):
 			return len(self) == len(self[0]) == 9
 		def values(self):
 			# must to be in the range 1 to 9
-			s = np.array(self)
-			return (9 >= s).all() and (s >= 0).all()
+			s = []
+			for r in self: s += r
+			return (int(max(set(s))) <= 9) and (int(min(set(s)) >= 0))
 		def given(self):
 			# must to be 17 or more
-			return True
+			return sum(row.count(0) for row in self) < 64
 		
-		#prt(puzzle)
 		if not sizes(puzzle):
-			print('Sizes Sudoku-array is wrong!')
-		else:
-			pass
-			#print('Sizes -\t\tpassed')
-		if not values(puzzle):
-			print('Values of Sudoku-array is in incorrect range!')
-		else:
-			pass
-			#print('Values range -\tpassed')
-		if not given(puzzle):
-			print('Very little data in Sudoku-array. The solution is impossible!')
-		else:
-			pass
-			#print('Given -\t\tpassed')		
-
+			raise('Sizes Sudoku-array is wrong!')
+		elif not values(puzzle):
+			raise('Values of Sudoku-array is in incorrect range!')
+		elif not given(puzzle):
+			raise('Very little data in Sudoku-array. The solution is impossible!')
+		
 	class cell(object):
 		'''
 		create cell-object
@@ -104,21 +110,14 @@ def sudoku_solver(puzzle):
 
 	class field(object):
 			def __init__(self):
-				# create numpy-array of suppose (default suposes)
-				'''
-				self.state = np.array([cell(i) for i in range(81)])
-				self.state.resize(9, 9)
-				'''
+				# create array of suppose (default suposes)
 				self.state = [[cell(i*9 + j) for j in range(9)]
 											 for i in range(9)]
-				
-			def fill(self, array):
 				# put sudoku-array in the field
 				for row in range(9):
 					for column in range(9):
-						if array[row][column]:
-							self.state[row][column].suppose = [array[row][column]]
-				return self
+						if puzzle[row][column]:
+							self.state[row][column].suppose = [puzzle[row][column]]
 
 			def num_ans(self):
 				'''
@@ -184,7 +183,7 @@ def sudoku_solver(puzzle):
 
 	def get_ans(array):
 		def del_extra(self):
-			rtrn = False
+			make_change = False
 			'''	Look unique sets (of 1, 2, 3 elements) and clean extra
 			supposes like it (in each row & column & square)
 			input:
@@ -216,15 +215,56 @@ def sudoku_solver(puzzle):
 				return make_change
 
 			for j in range(9):
-				rtrn = rtrn or unique_look_clean(self.state[j]) \
+				make_change = make_change or unique_look_clean(self.state[j]) \
 							or unique_look_clean(self.column(j)) \
 							or unique_look_clean(self.square(j))
 				if not self.check_ans():
 					return None
-			return rtrn
+			return make_change
+
+		def unique_make_singular(self):
+			'''	Looking unique suppose in nonsingle cell and make singular it
+				input:
+					self - array by objects
+				return:
+					True - if make change in self
+					False - if it is not
+					None - if finded mistake in self (only after True)'''
+			def find_num(s, n):
+				''' Count number "n" in array "s"
+					argument:
+						s - numpy-array by objects (shape (1,))
+						n - number for search
+					return:
+						<index+1> this elements unless len==1
+						or <0> if n == 0 or n > 1'''
+				a = [n in i if len(i) > 1 else 0 for i in [j.suppose for j in s]]
+				return a.index(1) + 1 if sum(a) == 1 else 0
+
+			# for each suppose
+			for supp in range(1,10):
+				# in each row & column & quadrant
+				for j in range(9):
+					# string as [row, column, square]
+					strange_strings = [self.state[j], self.column(j), self.square(j)]
+					# for each type of string
+					for str_str in strange_strings:
+						ind = find_num(str_str, supp)
+						if ind:
+							str_str[ind-1].suppose = [supp]
+							if not self.check_ans():
+								return None
+							return True
+			return False
+
 
 		while array.num_ans() < 81:
+			
 			f = del_extra(array) 
+			if f: continue
+			elif f == None: return False
+			
+			f = unique_make_singular(array) 
 			if f: continue
 			elif f == None: return False
 			return True
@@ -233,14 +273,16 @@ def sudoku_solver(puzzle):
 	#=========== work ====================
 	# test [puzzle]
 	tst()
+	#tst.prt(puzzle)
 	
 	# create w_arr and fill it
 	w_arr = field()
-	w_arr.fill(puzzle)
+	if not w_arr.check_ans():
+		raise('Given values is wrong!')
 
 	# init stack
 	mem_state = []
-	
+		
 	while True:
 		#tmp.info(w_arr)
 			
@@ -248,8 +290,9 @@ def sudoku_solver(puzzle):
 		if z == None:			
 			#print('Sudoku is solved.')
 			#tmp.short_p(w_arr)
-			return 'Sudoku is solved!'
-			#return [[column.suppose[0] for column in row] for row in w_arr.state]
+			#return 'Sudoku is solved!'
+			#tmp.short_p(w_arr)
+			return [[column.suppose[0] for column in row] for row in w_arr.state]
 		elif z:
 			spp = w_arr.look_double()
 			tmp_list = spp.suppose
@@ -262,15 +305,15 @@ def sudoku_solver(puzzle):
 
 
 ask = [[
-		[0, 0, 6, 1, 0, 0, 0, 0, 8], 
-		[0, 8, 0, 0, 9, 0, 0, 3, 0], 
-		[2, 0, 0, 0, 0, 5, 4, 0, 0], 
-		[4, 0, 0, 0, 0, 1, 8, 0, 0], 
-		[0, 3, 0, 0, 7, 0, 0, 4, 0], 
-		[0, 0, 7, 9, 0, 0, 0, 0, 3], 
-		[0, 0, 8, 4, 0, 0, 0, 0, 6], 
-		[0, 2, 0, 0, 5, 0, 0, 8, 0], 
-		[1, 0, 0, 0, 0, 2, 5, 0, 0]
+		[4, 7, 0, 3, 0, 2, 0, 6, 0],
+		[0, 0, 9, 0, 0, 0, 2, 0, 0],
+		[0, 8, 0, 0, 0, 0, 7, 0, 0],
+		[0, 5, 0, 0, 1, 9, 0, 0, 0],
+		[0, 0, 0, 6, 0, 5, 0, 0, 0],
+		[0, 0, 0, 2, 8, 0, 0, 5, 0],
+		[0, 0, 3, 0, 0, 0, 0, 9, 0],
+		[0, 0, 2, 0, 0, 0, 8, 0, 0],
+		[0, 4, 0, 8, 0, 6, 0, 7, 2]
 		], [
 		[3, 4, 6, 1, 2, 7, 9, 5, 8], 
 		[7, 8, 5, 6, 9, 4, 1, 3, 2], 
@@ -328,6 +371,46 @@ minor hard
 		[0, 0, 0, 0, 0, 9, 0, 8, 0], 
 		[0, 1, 0, 0, 0, 2, 0, 0, 9], 
 		[0, 0, 3, 0, 0, 0, 7, 0, 0] 
+minor mistake
+		[1, 1, 3, 4, 5, 6, 7, 8, 9],
+		[4, 0, 6, 7, 8, 9, 1, 2, 3],
+		[7, 8, 9, 1, 2, 3, 4, 5, 6],
+		[2, 3, 4, 5, 6, 7, 8, 9, 1],
+		[5, 6, 7, 8, 9, 1, 2, 3, 4],
+		[8, 9, 1, 2, 3, 4, 5, 6, 7],
+		[3, 4, 5, 6, 7, 8, 9, 1, 2],
+		[6, 7, 8, 9, 1, 2, 3, 4, 5],
+		[9, 1, 2, 3, 4, 5, 6, 7, 8]
+minor mistake
+		[1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[2, 2, 2, 2, 2, 2, 2, 2, 2],
+		[3, 3, 3, 3, 3, 3, 3, 3, 3],
+		[4, 4, 4, 4, 4, 4, 4, 4, 4],
+		[5, 5, 5, 5, 5, 5, 5, 5, 5],
+		[6, 6, 6, 6, 6, 6, 6, 6, 6],
+		[7, 7, 7, 7, 7, 7, 7, 7, 7],
+		[8, 8, 8, 8, 8, 8, 8, 8, 8],
+		[9, 9, 9, 9, 9, 9, 9, 9, 9]
+minor from CodeWars
+		[0, 5, 0, 0, 0, 4, 2, 7, 9],
+		[0, 8, 0, 0, 0, 5, 0, 3, 0],
+		[0, 7, 0, 0, 0, 0, 0, 0, 0],
+		[6, 0, 0, 0, 0, 3, 0, 0, 0],
+		[0, 0, 0, 4, 0, 8, 0, 0, 0],
+		[0, 0, 0, 5, 0, 0, 0, 0, 8],
+		[0, 0, 0, 0, 0, 0, 0, 1, 0],
+		[0, 1, 0, 8, 0, 0, 0, 5, 0],
+		[3, 4, 7, 9, 0, 0, 0, 8, 0]
+minor from CodeWars
+		[4, 7, 0, 3, 0, 2, 0, 6, 0],
+		[0, 0, 9, 0, 0, 0, 2, 0, 0],
+		[0, 8, 0, 0, 0, 0, 7, 0, 0],
+		[0, 5, 0, 0, 1, 9, 0, 0, 0],
+		[0, 0, 0, 6, 0, 5, 0, 0, 0],
+		[0, 0, 0, 2, 8, 0, 0, 5, 0],
+		[0, 0, 3, 0, 0, 0, 0, 9, 0],
+		[0, 0, 2, 0, 0, 0, 8, 0, 0],
+		[0, 4, 0, 8, 0, 6, 0, 7, 2]
 
 00 01 02  03 04 05  06 07 08  
 09 10 11  12 13 14  15 16 17  
