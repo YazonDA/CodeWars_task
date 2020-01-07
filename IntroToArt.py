@@ -1,16 +1,14 @@
 def get_w(height):
 	if height < 2:
 		return []
-	ans = [' ' if i else '*' for i in range(height)]
-	for ind in [1, -1]:
-		print(f'ind == {ind}')
-		for j in range(1, 1 + height):
-			for i in range(height):
-				s = '*'
-				if i-(j*ind):
-					s = ' '
-				ans[i - height] += s
-		print(ans)
+	ans = [''] * height
+	ans_base = [' '] * height
+	height -= 1
+	ans_base[1] = '*'
+	for z in range(-1, 4 * height):
+		ind = 1 - ((z // height+1) % 2) * 2
+		ans_base = ans_base[ind:] + (ans_base[:ind])
+		ans = list(map(lambda x,y: x + y, ans, ans_base))
 	return ans
 
 
