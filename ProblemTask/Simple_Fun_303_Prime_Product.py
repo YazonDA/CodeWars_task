@@ -1,3 +1,4 @@
+'''
 <<<<<<< HEAD:ProblemTask/Simple_Fun_303_Prime_Product.py
 # PROBLEM!
 # Execution Timed Out!!!
@@ -7,6 +8,7 @@
 # some arguments
 
 >>>>>>> 1d848eb4b85f09ef70046c2940c2f00a356eec16:ProblemTask/Simple_Fun_303_Prime_Product.py
+'''
 '''CodeWars task - Simple Fun #303: Prime Product
 FUNDAMENTALS
 6 kyu
@@ -29,12 +31,15 @@ def prime_product(n):
 		arr = []
 		i = 2
 		while i <= w:
-		    if a[i] != 0:
-		        arr.append(a[i])
-		        for j in range(i, w+1, i): a[j] = 0
-		    i += 1
+			if a[i] != 0:
+				arr.append(a[i])
+				for j in range(i, w+1, i): a[j] = 0
+			while a[i] != 0:
+				i += 1
 		return arr
+	
 	ans = []
+	print(n)
 	arr = prime_(n)
 	for i in arr:
 		suppouse = n - i
