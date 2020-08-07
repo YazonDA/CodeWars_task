@@ -1,4 +1,8 @@
-import os
+# import someneed
+
+# class cell
+
+# class field (cell by cell many numbers)
 
 
 class sudoku_cell(object):
