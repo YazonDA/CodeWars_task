@@ -1,0 +1,207 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"auth",
+				"author"
+			],
+			[
+				"au",
+				"author"
+			],
+			[
+				"aut",
+				"author_list"
+			],
+			[
+				"autho",
+				"author_format"
+			],
+			[
+				"ma",
+				"match"
+			],
+			[
+				"dst",
+				"dst_path"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"menu",
+				"View: Toggle Menu"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 136.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/usr/share/applications/defaults.list",
+		"/usr/share/applications/sublime_text.desktop",
+		"/media/yda/PB740/system/explorer-3/settings.cfg",
+		"/home/yda/prgr/fragmentS/pyHelperProbe/SbrBnk/StAl/sb_parser.py",
+		"/home/yda/prgr/fragmentS/pyHelperProbe/SbrBnk/StSt/Операции по карте 0367 с 01.06.20 до 07.06.20.csv",
+		"/home/yda/prgr/CodeWars_task/Most_Frequent_Weekdays.py",
+		"/home/yda/prgr/CodeWars_task/Easy_Line.py",
+		"/home/yda/prgr/CodeWars_task/split_and_add.py",
+		"/home/yda/prgr/fragmentS/SPASS",
+		"/media/yda/li_store/ts_doc/numarch",
+		"/media/yda/li_store/sm_prgr/libusb-1.0.23/INSTALL",
+		"/home/yda/prgr/fragmentS/temporary.py",
+		"/home/yda/.config/sublime-text-3/Packages/User/Python3.sublime-build",
+		"/media/yda/li_store/sm_prgr/qt-everywhere-src-5.15.0/README",
+		"/home/yda/.bashrc"
+	],
+	"find":
+	{
+		"height": 38.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/Python3.sublime-build",
+	"project": "HSS.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
